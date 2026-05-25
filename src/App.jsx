@@ -2355,9 +2355,9 @@ function LandingPage({ onGetStarted }) {
     ["03", "Trust the output", "Review citations, context trace, and version history before the team ships."],
   ];
   const stats = [
-    ["1", "shared source of truth for GTM"],
-    ["0", "cold starts for new campaigns"],
-    ["100%", "source-traceable AI outputs"],
+    ["40%", "faster first-draft GTM assets"],
+    ["6h", "saved on campaign brief prep"],
+    ["85%", "less brand-context rework"],
   ];
   const useCases = {
     content: {
@@ -2666,9 +2666,9 @@ function LandingPage({ onGetStarted }) {
 
 function LandingPageV2({ onGetStarted }) {
   const outcomes = [
-    ["1", "shared source of truth for GTM"],
-    ["0", "cold starts for new campaigns"],
-    ["100%", "source-traceable AI outputs"],
+    ["40%", "faster first-draft GTM assets"],
+    ["6h", "saved on campaign brief prep"],
+    ["85%", "less brand-context rework"],
   ];
   const workflow = [
     { icon: BookOpen, title: "Define the source of truth", text: "Store positioning, ICP, proof, competitor notes, tone, and design references as source pages." },
