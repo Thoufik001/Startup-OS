@@ -648,9 +648,21 @@ function DefineView() {
         <div className="mb-5 rounded-lg border border-[#e9e9e9] bg-white p-4">
           <div className="flex items-start gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#fff7f2] text-[#e56f4d]"><Sparkles size={20} /></div>
-            <div>
-              <div className="type-card-title text-[#333]">Source blocks</div>
-              <div className="type-body mt-1 text-[#777]">Each page can hold a form synopsis, pasted notes, docs, images, and an AI summary.</div>
+            <div className="min-w-0 flex-1">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <div className="type-card-title text-[#333]">Source coverage</div>
+                  <div className="type-body mt-1 text-[#777]">4 of 7 context pages have enough detail for basic GTM output.</div>
+                </div>
+                <div className="shrink-0 text-right">
+                  <div className="text-[24px] font-semibold leading-none tracking-[-0.04em] text-[#333]">57%</div>
+                  <div className="type-caption mt-1 text-[#999]">Filled</div>
+                </div>
+              </div>
+              <div className="mt-4 h-2 rounded-full bg-[#ececec]">
+                <div className="h-2 rounded-full bg-[var(--context-warm)]" style={{ width: "57%" }} />
+              </div>
+              <div className="type-caption mt-2 text-[#888]">Needs proof, competitor notes, and design references.</div>
             </div>
           </div>
         </div>
