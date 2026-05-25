@@ -477,7 +477,7 @@ function DashboardV2({ setActive }) {
   return (
     <div className="mx-auto min-h-full max-w-[1120px] px-4 py-5 pb-24 sm:px-6 lg:py-7">
       <section className="rounded-lg border border-[#e6e6e6] bg-white p-5 sm:p-6">
-        <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_420px] xl:items-start">
+        <div>
           <div>
             <div className="type-label text-[#999]">Context health</div>
             <h1 className="type-page-title mt-2 max-w-[720px] text-[#262626]">
@@ -487,14 +487,14 @@ function DashboardV2({ setActive }) {
               Positioning and ICP are strong. Proof and design references need work before generating stronger sales and landing page assets.
             </p>
           </div>
-          <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-1">
+          <div className="mt-5 grid gap-3 sm:grid-cols-2">
             {keyMetrics.map((metric) => (
-              <div key={metric.label} className="rounded-lg bg-[#f7f7f7] px-4 py-4">
-                <div className="flex items-baseline justify-between gap-4">
-                  <div className="type-label text-[#999]">{metric.label}</div>
-                  <div className="text-[28px] font-semibold leading-none tracking-[-0.04em] text-[#262626]">{metric.value}</div>
+              <div key={metric.label} className="flex aspect-[1.65/1] min-h-[138px] flex-col justify-between rounded-lg bg-[#f7f7f7] p-4 sm:aspect-square sm:min-h-0">
+                <div className="type-label text-[#999]">{metric.label}</div>
+                <div>
+                  <div className="text-[36px] font-semibold leading-none tracking-[-0.05em] text-[#262626]">{metric.value}</div>
+                  <div className="type-caption mt-2 text-[#777]">{metric.detail}</div>
                 </div>
-                <div className="type-caption mt-2 text-[#777]">{metric.detail}</div>
               </div>
             ))}
           </div>
