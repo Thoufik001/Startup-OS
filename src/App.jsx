@@ -40,8 +40,8 @@ import {
 } from "lucide-react";
 
 const companyProfile = {
-  name: "DeployIQ",
-  description: "SAP Staff Augmentation",
+  name: "Brand",
+  description: "Startup workspace",
   brandAccent: "#242424",
   brandAccentHover: "#303030",
   brandAccentSoft: "#F4F4F4",
@@ -1732,7 +1732,7 @@ function BuildStudioView() {
   const sourceDetails = {
     Positioning: {
       type: "Define block",
-      summary: "Approved narrative for what DeployIQ is, who it serves, and why the team should win.",
+      summary: "Approved narrative for what the brand is, who it serves, and why the team should win.",
       snippet: "ContextOS gives startup teams one place to define the truth, then uses that approved context to build consistent GTM artifacts.",
       updated: "2h ago",
       owner: "Thoufik",
@@ -2340,106 +2340,535 @@ function MobileBottomNav({ active, setActive }) {
 }
 
 function LandingPage({ onGetStarted }) {
-  const capabilities = [
-    { icon: BookOpen, title: "Define context once", text: "Capture positioning, ICP, proof, competitors, tone, and design references as reusable source pages." },
-    { icon: Bot, title: "Build from trusted memory", text: "Generate posts, landing sections, emails, and sales assets from saved startup context." },
-    { icon: Clock3, title: "Trace what changed", text: "Keep version history and source traceability visible so teams trust every AI output." },
+  const [activeUseCase, setActiveUseCase] = useState("content");
+  const [teamSize, setTeamSize] = useState(4);
+  const [assetsPerWeek, setAssetsPerWeek] = useState(9);
+  const productCards = [
+    { title: "Context health", detail: "Positioning and ICP are ready. Proof needs evidence.", meta: "68% ready", icon: Target },
+    { title: "Define sources", detail: "Synopsis, notes, docs, images, and AI summaries in one library.", meta: "4 of 7 filled", icon: BookOpen },
+    { title: "Build artifacts", detail: "Create posts, landing sections, emails, and battlecards from saved context.", meta: "RAG + web", icon: Bot },
+    { title: "Source trace", detail: "See what the AI used, where it came from, and what changed.", meta: "Versioned", icon: Clock3 },
+  ];
+  const steps = [
+    ["01", "Define the truth", "Add positioning, ICP, proof, competitor angles, tone, and design references once."],
+    ["02", "Generate with context", "Ask Build for GTM outputs that reuse your approved startup memory."],
+    ["03", "Trust the output", "Review citations, context trace, and version history before the team ships."],
+  ];
+  const stats = [
+    ["6.4h", "saved per weekly asset cycle"],
+    ["42%", "less context rework before publishing"],
+    ["1", "brand memory for the team"],
+  ];
+  const useCases = {
+    content: {
+      label: "Content",
+      headline: "Publish consistent thought leadership without rewriting the brief every time.",
+      output: "Founder LinkedIn post",
+      context: ["Positioning", "ICP", "Proof Materials"],
+      metric: "3.2h saved",
+      action: "Build post",
+    },
+    sales: {
+      label: "Sales",
+      headline: "Turn proof and competitor notes into sales-ready assets with fewer claim risks.",
+      output: "Competitor battlecard",
+      context: ["Competitor Angles", "Proof Materials", "ICP"],
+      metric: "28% faster prep",
+      action: "Build battlecard",
+    },
+    launch: {
+      label: "Launch",
+      headline: "Create landing sections, email angles, and image prompts from the same approved truth.",
+      output: "Landing hero section",
+      context: ["Value Proposition", "Design System", "Proof Materials"],
+      metric: "5 assets queued",
+      action: "Build launch set",
+    },
+  };
+  const activeCase = useCases[activeUseCase];
+  const estimatedWeeklySavings = Math.round(teamSize * assetsPerWeek * 0.7);
+  const estimatedMonthlySavings = estimatedWeeklySavings * 4;
+  const conversionPoints = [
+    "Bring your own OpenAI, Claude, Gemini, or image model key.",
+    "Keep draft sources out of Build until the context is ready.",
+    "Show citations and source trace so teams trust the output.",
   ];
 
   return (
     <div className="min-h-screen bg-white text-[#292929]">
-      <header className="mx-auto flex max-w-[1120px] items-center justify-between px-4 py-5 sm:px-6 lg:px-8">
+      <header className="mx-auto flex max-w-[1160px] items-center justify-between px-4 py-5 sm:px-6 lg:px-8">
         <button onClick={onGetStarted} className="flex items-center gap-3 text-left">
-          <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#2b2b2b] text-white">
-            <Sparkles size={18} />
-          </span>
-          <span>
-            <span className="type-card-title block text-[#262626]">ContextOS</span>
-            <span className="type-caption block text-[#777]">Startup context for AI execution</span>
-          </span>
+          <span className="type-card-title text-[#242424]">ContextOS</span>
         </button>
-        <button onClick={onGetStarted} className="label hidden h-9 items-center gap-2 rounded-lg bg-[#2b2b2b] px-3 text-white transition hover:bg-[#333] sm:flex">
-          Get started <ArrowRight size={15} />
-        </button>
+        <nav className="hidden items-center gap-6 type-caption text-[#666] md:flex">
+          <button onClick={onGetStarted} className="transition hover:text-[#242424]">Dashboard</button>
+          <a href="#how-it-works" className="transition hover:text-[#242424]">How it works</a>
+          <a href="#use-cases" className="transition hover:text-[#242424]">Use cases</a>
+          <a href="#start" className="transition hover:text-[#242424]">Start</a>
+        </nav>
+        <div className="flex items-center gap-2">
+          <button onClick={onGetStarted} className="label hidden h-9 rounded-lg border border-[#dedede] px-3 text-[#444] transition hover:bg-[#f7f7f7] sm:block">
+            View demo
+          </button>
+          <button onClick={onGetStarted} className="label flex h-9 items-center gap-2 rounded-lg bg-[#2b2b2b] px-3 text-white transition hover:bg-[#333]">
+            Get started <ChevronRight size={15} />
+          </button>
+        </div>
       </header>
 
-      <main className="mx-auto grid min-h-[calc(100vh-76px)] max-w-[1120px] items-center gap-10 px-4 pb-12 pt-6 sm:px-6 lg:grid-cols-[minmax(0,0.95fr)_minmax(420px,1.05fr)] lg:px-8">
-        <section>
-          <div className="type-label text-[#999]">Context to GTM output</div>
-          <h1 className="display mt-3 max-w-[680px] text-[#242424]">
-            Build startup artifacts from one trusted brand memory.
+      <main>
+        <section className="mx-auto max-w-[1160px] px-4 pb-16 pt-16 text-center sm:px-6 lg:px-8 lg:pb-24 lg:pt-24">
+          <div className="mx-auto inline-flex items-center rounded-lg border border-[#e6e6e6] px-3 py-1 type-caption text-[#666]">
+            Startup context for AI execution
+          </div>
+          <h1 className="display mx-auto mt-5 max-w-[760px] text-[#1f1f1f]">
+            Define your startup once. Build every GTM asset from it.
           </h1>
-          <p className="body-lg mt-4 max-w-[560px] text-[#666]">
-            ContextOS helps early teams define their positioning, proof, customers, and design references once, then generate grounded GTM assets with visible source traceability.
+          <p className="body-lg mx-auto mt-4 max-w-[660px] text-[#666]">
+            ContextOS gives founders, PMs, and GTM teams one place to store brand truth, source evidence, and design references before asking AI to create.
           </p>
-          <div className="mt-6 flex flex-wrap gap-3">
+          <div className="mt-6 flex flex-wrap justify-center gap-3">
             <button onClick={onGetStarted} className="label flex h-10 items-center gap-2 rounded-lg bg-[#2b2b2b] px-4 text-white transition hover:bg-[#333]">
-              Get started <ArrowRight size={16} />
+              Open dashboard <ChevronRight size={16} />
             </button>
-            <button onClick={onGetStarted} className="label h-10 rounded-lg border border-[#dedede] bg-white px-4 text-[#444] transition hover:bg-[#f7f7f7]">
-              View dashboard
+            <button onClick={onGetStarted} className="label h-10 rounded-lg border border-[#dedede] px-4 text-[#444] transition hover:bg-[#f7f7f7]">
+              Try Build
             </button>
           </div>
 
-          <div className="mt-8 grid gap-3 sm:grid-cols-3">
-            {capabilities.map((item) => {
-              const Icon = item.icon;
-              return (
-                <div key={item.title} className="rounded-lg border border-[#eeeeee] bg-[#fafafa] p-4">
-                  <Icon size={18} className="text-[#555]" />
-                  <h2 className="type-card-title mt-3 text-[#303030]">{item.title}</h2>
-                  <p className="type-caption mt-2 text-[#777]">{item.text}</p>
-                </div>
-              );
-            })}
+          <div className="mx-auto mt-8 grid max-w-[720px] gap-3 sm:grid-cols-3">
+            {stats.map(([value, label]) => (
+              <div key={label} className="rounded-lg border border-[#eeeeee] bg-[#fafafa] p-4">
+                <div className="h3 text-[#242424]">{value}</div>
+                <div className="type-caption mt-1 text-[#777]">{label}</div>
+              </div>
+            ))}
           </div>
         </section>
 
-        <section className="rounded-lg border border-[#e6e6e6] bg-[#fafafa] p-4 shadow-[0_20px_60px_rgba(0,0,0,0.08)]">
-          <div className="rounded-lg border border-[#e7e7e7] bg-white">
-            <div className="flex h-12 items-center justify-between border-b border-[#eeeeee] px-4">
-              <div className="flex items-center gap-2">
-                <span className="h-2.5 w-2.5 rounded-full bg-[#f05d42]" />
-                <span className="h-2.5 w-2.5 rounded-full bg-[#f3c94f]" />
-                <span className="h-2.5 w-2.5 rounded-full bg-[#28c840]" />
+        <section className="mx-auto grid max-w-[1040px] gap-3 px-4 py-16 sm:px-6 md:grid-cols-2 lg:px-8 lg:py-24">
+          <div className="rounded-lg border border-[#e6e6e6] bg-[#fafafa] p-4">
+            <div className="rounded-lg border border-[#e7e7e7] bg-white p-4">
+              <div className="flex items-center justify-between">
+                <span className="type-caption text-[#999]">Define Sources</span>
+                <span className="type-caption text-[#777]">7 pages</span>
               </div>
-              <span className="type-caption text-[#999]">DeployIQ workspace</span>
-            </div>
-            <div className="grid gap-4 p-4">
-              <div>
-                <div className="type-label text-[#999]">Context health</div>
-                <div className="h3 mt-2 max-w-[520px] text-[#262626]">DeployIQ context is 68% ready for GTM output.</div>
-              </div>
-              <div className="grid gap-3 sm:grid-cols-2">
-                <div className="rounded-lg bg-[#f7f7f7] p-4">
-                  <div className="type-label text-[#999]">Source coverage</div>
-                  <div className="display mt-6 text-[#262626]">4/7</div>
-                  <div className="type-caption text-[#777]">Core context blocks filled</div>
-                </div>
-                <div className="rounded-lg bg-[#f7f7f7] p-4">
-                  <div className="type-label text-[#999]">Traceability</div>
-                  <div className="display mt-6 text-[#262626]">62%</div>
-                  <div className="type-caption text-[#777]">RAG + web citations</div>
-                </div>
-              </div>
-              <div className="grid gap-2 sm:grid-cols-2">
-                {["Positioning", "ICP", "Proof", "Competitors"].map((item, index) => (
-                  <div key={item} className="flex items-center justify-between rounded-lg border border-[#eeeeee] bg-white px-3 py-3">
-                    <span className="type-card-title text-[#333]">{item}</span>
-                    <span className={`type-caption rounded-md px-2 py-1 ${index < 2 ? "border border-[var(--approved-border)] bg-[var(--approved-bg)] text-[var(--approved-text)]" : "bg-[#f1f1f1] text-[#777]"}`}>
-                      {index < 2 ? "Ready" : index === 2 ? "Needs evidence" : "Draft"}
-                    </span>
+              <div className="mt-4 space-y-2">
+                {["Positioning", "ICP & Personas", "Proof Materials", "Design References"].map((item, index) => (
+                  <div key={item} className="flex items-center gap-3 rounded-lg bg-[#fafafa] px-3 py-3">
+                    <FileText size={17} className={index === 2 ? "text-[#f05d42]" : index === 3 ? "text-[#2f7dd1]" : "text-[#555]"} />
+                    <span className="type-card-title flex-1 text-left text-[#333]">{item}</span>
+                    <span className="type-caption text-[#999]">{index < 2 ? "Ready" : "Draft"}</span>
                   </div>
                 ))}
               </div>
-              <div className="rounded-lg border border-[#eeeeee] bg-white p-4">
-                <div className="type-label text-[#999]">Next best move</div>
-                <div className="type-section-title mt-2 text-[#303030]">Add 3 proof points, then build a founder LinkedIn post.</div>
+            </div>
+            <div className="mt-3 grid grid-cols-2 gap-3">
+              <div className="rounded-lg bg-white p-4">
+                <div className="type-caption text-[#999]">Source coverage</div>
+                <div className="display mt-6 text-[#242424]">4/7</div>
+              </div>
+              <div className="rounded-lg bg-white p-4">
+                <div className="type-caption text-[#999]">Traceability</div>
+                <div className="display mt-6 text-[#242424]">62%</div>
+              </div>
+            </div>
+          </div>
+
+          <div className="grid gap-3">
+            <div className="rounded-lg border border-[#e8e8e8] bg-white p-5">
+              <div className="mb-4 grid grid-cols-3 gap-2">
+                {Object.entries(useCases).map(([key, item]) => (
+                  <button
+                    key={key}
+                    onClick={() => setActiveUseCase(key)}
+                    className={`label h-9 rounded-lg border transition ${activeUseCase === key ? "border-[#2b2b2b] bg-[#2b2b2b] text-white" : "border-[#e5e5e5] bg-white text-[#777] hover:bg-[#fafafa]"}`}
+                  >
+                    {item.label}
+                  </button>
+                ))}
+              </div>
+              <div className="flex items-center justify-between gap-4">
+                <div>
+                  <div className="type-caption text-[#999]">Selected outcome</div>
+                  <h2 className="h4 mt-2 text-[#303030]">{activeCase.output}</h2>
+                </div>
+                <div className="rounded-lg bg-[#f7f7f7] px-3 py-2 text-right">
+                  <div className="type-caption text-[#999]">Impact</div>
+                  <div className="type-card-title text-[#242424]">{activeCase.metric}</div>
+                </div>
+              </div>
+              <p className="type-body mt-4 text-[#666]">{activeCase.headline}</p>
+              <div className="mt-4 flex flex-wrap gap-2">
+                {activeCase.context.map((item) => (
+                  <span key={item} className="type-caption rounded-md bg-[#f2f2f2] px-2 py-1 text-[#666]">{item}</span>
+                ))}
+              </div>
+            </div>
+            <div className="grid gap-3 sm:grid-cols-2">
+              {productCards.map((item) => {
+                const Icon = item.icon;
+                return (
+                  <div key={item.title} className="rounded-lg border border-[#e8e8e8] bg-white p-4 text-left">
+                    <div className="flex items-center justify-between">
+                      <Icon size={17} className="text-[#555]" />
+                      <span className="type-caption text-[#999]">{item.meta}</span>
+                    </div>
+                    <h2 className="type-card-title mt-5 text-[#303030]">{item.title}</h2>
+                    <p className="type-caption mt-2 text-[#777]">{item.detail}</p>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+
+        <section className="mx-auto grid max-w-[1040px] gap-8 px-4 py-16 sm:px-6 md:grid-cols-[minmax(0,0.9fr)_minmax(360px,1.1fr)] lg:px-8 lg:py-24">
+          <div>
+            <div className="type-caption text-[#999]">Business case</div>
+            <h2 className="h2 mt-3 text-[#242424]">Stop paying the context tax on every new asset.</h2>
+            <p className="type-body mt-4 max-w-[440px] text-[#666]">
+              Every campaign, post, deck, or sales email starts faster when the team has one reliable source of brand and GTM truth.
+            </p>
+            <div className="mt-6 space-y-3">
+              {conversionPoints.map((item) => (
+                <div key={item} className="flex gap-3">
+                  <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-md bg-[#2b2b2b] text-white">
+                    <Check size={13} />
+                  </span>
+                  <span className="type-body text-[#555]">{item}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="rounded-lg border border-[#e6e6e6] bg-[#fafafa] p-5">
+            <div className="flex items-center justify-between">
+              <h3 className="h4 text-[#303030]">Savings estimator</h3>
+              <span className="type-caption text-[#999]">Prototype metric</span>
+            </div>
+            <div className="mt-6 grid gap-5">
+              <label className="block">
+                <div className="mb-2 flex items-center justify-between type-caption text-[#777]">
+                  <span>Team members using Build</span>
+                  <span>{teamSize}</span>
+                </div>
+                <input type="range" min="1" max="12" value={teamSize} onChange={(event) => setTeamSize(Number(event.target.value))} className="w-full accent-[#2b2b2b]" />
+              </label>
+              <label className="block">
+                <div className="mb-2 flex items-center justify-between type-caption text-[#777]">
+                  <span>Assets created per week</span>
+                  <span>{assetsPerWeek}</span>
+                </div>
+                <input type="range" min="2" max="30" value={assetsPerWeek} onChange={(event) => setAssetsPerWeek(Number(event.target.value))} className="w-full accent-[#2b2b2b]" />
+              </label>
+            </div>
+            <div className="mt-6 grid grid-cols-2 gap-3">
+              <div className="rounded-lg bg-white p-4">
+                <div className="type-caption text-[#999]">Weekly time returned</div>
+                <div className="display mt-4 text-[#242424]">{estimatedWeeklySavings}h</div>
+              </div>
+              <div className="rounded-lg bg-white p-4">
+                <div className="type-caption text-[#999]">Monthly time returned</div>
+                <div className="display mt-4 text-[#242424]">{estimatedMonthlySavings}h</div>
+              </div>
+            </div>
+            <button onClick={onGetStarted} className="label mt-5 h-10 w-full rounded-lg bg-[#2b2b2b] px-4 text-white transition hover:bg-[#333] active:scale-[0.98]">
+              Build with your context
+            </button>
+          </div>
+        </section>
+
+        <section id="how-it-works" className="mx-auto max-w-[1040px] px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
+          <h2 className="h2 text-center text-[#242424]">How it works</h2>
+          <div className="mt-8 grid gap-3 md:grid-cols-3">
+            {steps.map(([number, title, text]) => (
+              <div key={title} className="rounded-lg border border-[#e6e6e6] bg-[#fafafa] p-5">
+                <div className="type-caption text-[#999]">{number}</div>
+                <h3 className="h4 mt-6 text-[#303030]">{title}</h3>
+                <p className="type-body mt-2 text-[#666]">{text}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section id="use-cases" className="border-y border-[#eeeeee] bg-[linear-gradient(#f3f3f3_1px,transparent_1px),linear-gradient(90deg,#f3f3f3_1px,transparent_1px)] bg-[size:64px_64px]">
+          <div className="mx-auto grid max-w-[1040px] gap-8 px-4 py-16 sm:px-6 md:grid-cols-3 lg:px-8 lg:py-24">
+            {stats.map(([value, label]) => (
+              <div key={label} className="text-center">
+                <div className="display text-[#242424]">{value}</div>
+                <div className="type-caption mt-2 text-[#777]">{label}</div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section className="mx-auto grid max-w-[1040px] gap-8 px-4 py-16 sm:px-6 md:grid-cols-2 lg:px-8 lg:py-24">
+          <div>
+            <div className="type-caption text-[#999]">For small startup teams</div>
+            <h2 className="h2 mt-3 max-w-[420px] text-[#242424]">A brand command center before AI becomes your coworker.</h2>
+            <p className="type-body mt-4 max-w-[440px] text-[#666]">
+              Keep founder memory, customer proof, positioning, and design references in one system so every output starts from the same truth.
+            </p>
+          </div>
+          <div className="rounded-lg border border-[#e6e6e6] bg-[#fafafa] p-5">
+            <div className="space-y-3">
+              {["Founder LinkedIn post", "Landing page hero", "Cold email sequence", "Competitor battlecard"].map((item, index) => (
+                <div key={item} className="flex items-center justify-between rounded-lg bg-white px-3 py-3">
+                  <span className="type-card-title text-[#333]">{item}</span>
+                  <span className="type-caption text-[#999]">{index === 0 ? "Ready" : "Queued"}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section id="start" className="mx-auto max-w-[1040px] px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
+          <div className="border-t border-[#eeeeee] pt-16 lg:pt-24">
+            <h2 className="h2 text-center text-[#242424]">Choose how to get started</h2>
+            <div className="mt-8 grid gap-4 md:grid-cols-2">
+              <div className="rounded-lg bg-[#f7f7f7] p-6">
+                <h3 className="h4 text-[#303030]">Start with your own brand</h3>
+                <p className="type-body mt-2 text-[#666]">Create a workspace, add sources, and build your first grounded artifact.</p>
+                <button onClick={onGetStarted} className="label mt-6 h-10 w-full rounded-lg bg-[#2b2b2b] px-4 text-white transition hover:bg-[#333]">
+                  Start building
+                </button>
+              </div>
+              <div className="rounded-lg bg-[#f7f7f7] p-6">
+                <h3 className="h4 text-[#303030]">Explore the prototype</h3>
+                <p className="type-body mt-2 text-[#666]">Open the current example brand workspace and see the full dashboard flow.</p>
+                <button onClick={onGetStarted} className="label mt-6 h-10 w-full rounded-lg border border-[#dcdcdc] bg-white px-4 text-[#444] transition hover:bg-[#f7f7f7]">
+                  View dashboard
+                </button>
               </div>
             </div>
           </div>
         </section>
       </main>
+
+      <footer className="border-t border-[#eeeeee]">
+        <div className="mx-auto flex max-w-[1160px] flex-col gap-4 px-4 py-8 type-caption text-[#888] sm:px-6 md:flex-row md:items-center md:justify-between lg:px-8">
+          <div>
+            <div className="type-card-title text-[#333]">ContextOS</div>
+            <div className="mt-1">Define once. Build with context.</div>
+          </div>
+          <div className="grid grid-cols-2 gap-x-8 gap-y-2 sm:flex sm:gap-6">
+            <button onClick={onGetStarted} className="text-left hover:text-[#333]">Dashboard</button>
+            <a href="#how-it-works" className="hover:text-[#333]">How it works</a>
+            <a href="#use-cases" className="hover:text-[#333]">Use cases</a>
+            <button onClick={onGetStarted} className="text-left hover:text-[#333]">Get started</button>
+          </div>
+        </div>
+      </footer>
+    </div>
+  );
+}
+
+function LandingPageV2({ onGetStarted }) {
+  const outcomes = [
+    ["6.4h", "saved per GTM asset cycle"],
+    ["42%", "less context rework"],
+    ["7", "core source blocks"],
+  ];
+  const workflow = [
+    { icon: BookOpen, title: "Define the source of truth", text: "Store positioning, ICP, proof, competitor notes, tone, and design references as source pages." },
+    { icon: Bot, title: "Build with grounded context", text: "Ask for posts, landing sections, emails, and sales assets that pull from approved brand memory." },
+    { icon: Clock3, title: "Show the work", text: "Use citations, source trace, and version history so teams can trust what AI produced." },
+  ];
+  const useCases = [
+    ["Founder content", "Turn positioning and proof into consistent founder posts."],
+    ["Landing pages", "Draft hero sections and claims from approved value props."],
+    ["Sales assets", "Create battlecards and email sequences without risky copy."],
+    ["Visual prompts", "Use design references to guide image and carousel prompts."],
+  ];
+
+  return (
+    <div className="min-h-screen overflow-hidden bg-white text-[#292929]">
+      <header className="mx-auto flex max-w-[1160px] items-center justify-between px-4 py-5 sm:px-6 lg:px-8">
+        <button onClick={onGetStarted} className="type-card-title text-[#242424]">ContextOS</button>
+        <nav className="hidden items-center gap-6 type-caption text-[#666] md:flex">
+          <a href="#product" className="transition hover:text-[#242424]">Product</a>
+          <a href="#workflow" className="transition hover:text-[#242424]">Workflow</a>
+          <a href="#outcomes" className="transition hover:text-[#242424]">Outcomes</a>
+        </nav>
+        <div className="flex items-center gap-2">
+          <button onClick={onGetStarted} className="label hidden h-9 rounded-lg border border-[#dedede] px-3 text-[#444] transition hover:bg-[#f7f7f7] active:scale-[0.98] sm:block">
+            View demo
+          </button>
+          <button onClick={onGetStarted} className="label flex h-9 items-center gap-2 rounded-lg bg-[#2b2b2b] px-3 text-white transition hover:bg-[#333] active:scale-[0.98]">
+            Get started <ChevronRight size={15} />
+          </button>
+        </div>
+      </header>
+
+      <main>
+        <section className="mx-auto max-w-[1160px] px-4 pb-20 pt-16 text-center sm:px-6 lg:px-8 lg:pb-24 lg:pt-24">
+          <div className="landing-reveal mx-auto inline-flex items-center gap-2 rounded-lg border border-[#e6e6e6] bg-white px-3 py-1 type-caption text-[#666]">
+            <span className="landing-status-dot h-2 w-2 rounded-full bg-[#28c840]" />
+            Brand memory for startup teams
+          </div>
+          <h1 className="landing-reveal display mx-auto mt-5 max-w-[820px] text-[#202020]" style={{ "--delay": "80ms" }}>
+            One place to define your startup context before AI builds from it.
+          </h1>
+          <p className="landing-reveal body-lg mx-auto mt-4 max-w-[680px] text-[#666]" style={{ "--delay": "140ms" }}>
+            ContextOS helps founders, PMs, and GTM teams keep positioning, proof, customer notes, and design references ready for consistent content, sales, and launch assets.
+          </p>
+          <div className="landing-reveal mt-6 flex flex-wrap justify-center gap-3" style={{ "--delay": "200ms" }}>
+            <button onClick={onGetStarted} className="label flex h-10 items-center gap-2 rounded-lg bg-[#2b2b2b] px-4 text-white transition hover:-translate-y-0.5 hover:bg-[#333] active:scale-[0.98]">
+              Open dashboard <ChevronRight size={16} />
+            </button>
+            <a href="#product" className="label flex h-10 items-center rounded-lg border border-[#dedede] px-4 text-[#444] transition hover:-translate-y-0.5 hover:bg-[#f7f7f7]">
+              See product
+            </a>
+          </div>
+
+          <div className="landing-reveal mx-auto mt-10 grid max-w-[760px] gap-3 sm:grid-cols-3" style={{ "--delay": "260ms" }}>
+            {outcomes.map(([value, label]) => (
+              <div key={label} className="rounded-lg border border-[#eeeeee] bg-[#fafafa] p-4">
+                <div className="h3 text-[#242424]">{value}</div>
+                <div className="type-caption mt-1 text-[#777]">{label}</div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section id="product" className="mx-auto max-w-[1040px] px-4 pb-20 sm:px-6 lg:px-8 lg:pb-24">
+          <div className="landing-reveal rounded-lg border border-[#e6e6e6] bg-[#fafafa] p-3 shadow-[0_20px_60px_rgba(0,0,0,0.08)]">
+            <div className="overflow-hidden rounded-lg border border-[#e8e8e8] bg-white">
+              <div className="flex h-12 items-center justify-between border-b border-[#eeeeee] px-4">
+                <div className="flex items-center gap-2">
+                  <span className="h-2.5 w-2.5 rounded-full bg-[#f05d42]" />
+                  <span className="h-2.5 w-2.5 rounded-full bg-[#f3c94f]" />
+                  <span className="h-2.5 w-2.5 rounded-full bg-[#28c840]" />
+                </div>
+                <span className="type-caption text-[#999]">Example brand workspace</span>
+              </div>
+              <div className="grid gap-4 p-4 lg:grid-cols-[1.15fr_0.85fr]">
+                <div className="rounded-lg bg-[#fafafa] p-5">
+                  <div className="type-label text-[#999]">Context health</div>
+                  <h2 className="h3 mt-2 max-w-[560px] text-[#262626]">Your brand context is ready for basic GTM output.</h2>
+                  <div className="mt-6 grid gap-2 sm:grid-cols-2">
+                    {["Positioning", "ICP", "Proof", "Design references"].map((item, index) => (
+                      <div key={item} className="flex items-center justify-between rounded-lg border border-[#eeeeee] bg-white px-3 py-3">
+                        <span className="type-card-title text-[#333]">{item}</span>
+                        <span className={`type-caption rounded-md px-2 py-1 ${index < 2 ? "border border-[var(--approved-border)] bg-[var(--approved-bg)] text-[var(--approved-text)]" : "bg-[#f1f1f1] text-[#777]"}`}>
+                          {index < 2 ? "Ready" : "Needs work"}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div className="grid gap-3">
+                  <div className="rounded-lg bg-[#242424] p-4 text-white">
+                    <div className="type-caption text-white/55">Build request</div>
+                    <div className="mt-4 space-y-2 font-mono text-[13px] leading-6 text-white/75">
+                      <div>create founder post</div>
+                      <div>using Positioning + ICP + Proof</div>
+                      <div className="text-white">source trace attached</div>
+                    </div>
+                  </div>
+                  <div className="rounded-lg border border-[#eeeeee] bg-white p-4">
+                    <div className="type-caption text-[#999]">Next best move</div>
+                    <h3 className="type-section-title mt-2 text-[#303030]">Add 3 proof points, then build a founder LinkedIn post.</h3>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="workflow" className="mx-auto max-w-[1040px] px-4 py-20 sm:px-6 lg:px-8 lg:py-24">
+          <div className="grid gap-10 lg:grid-cols-[0.85fr_1.15fr]">
+            <div>
+              <div className="type-caption text-[#999]">Workflow</div>
+              <h2 className="h2 mt-3 max-w-[460px] text-[#242424]">From scattered startup memory to reliable AI output.</h2>
+              <p className="type-body mt-4 max-w-[440px] text-[#666]">
+                Stop rebuilding the same context in every chat. Define it once, keep it fresh, and let Build reuse it.
+              </p>
+            </div>
+            <div className="grid gap-3">
+              {workflow.map((item, index) => {
+                const Icon = item.icon;
+                return (
+                  <div key={item.title} className="landing-reveal flex gap-4 rounded-lg border border-[#e8e8e8] bg-white p-5" style={{ "--delay": `${index * 80}ms` }}>
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[#f4f4f4] text-[#555]">
+                      <Icon size={19} />
+                    </div>
+                    <div>
+                      <h3 className="h4 text-[#303030]">{item.title}</h3>
+                      <p className="type-body mt-1 text-[#666]">{item.text}</p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+
+        <section id="outcomes" className="border-y border-[#eeeeee] bg-[linear-gradient(#f3f3f3_1px,transparent_1px),linear-gradient(90deg,#f3f3f3_1px,transparent_1px)] bg-[size:64px_64px]">
+          <div className="mx-auto max-w-[1040px] px-4 py-20 sm:px-6 lg:px-8 lg:py-24">
+            <div className="mx-auto max-w-[560px] text-center">
+              <h2 className="h2 text-[#242424]">Built for the first GTM operating system inside a startup.</h2>
+              <p className="type-body mt-3 text-[#666]">The useful part is not another chat box. It is the memory layer your team can improve, inspect, and trust.</p>
+            </div>
+            <div className="mt-10 grid gap-3 md:grid-cols-2">
+              {useCases.map(([title, text]) => (
+                <div key={title} className="rounded-lg border border-[#e6e6e6] bg-white p-5">
+                  <h3 className="h4 text-[#303030]">{title}</h3>
+                  <p className="type-body mt-2 text-[#666]">{text}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="mx-auto max-w-[1040px] px-4 py-20 sm:px-6 lg:px-8 lg:py-24">
+          <div className="grid gap-8 rounded-lg bg-[#f7f7f7] p-6 md:grid-cols-[1fr_0.9fr] md:p-8">
+            <div>
+              <div className="type-caption text-[#999]">Business outcome</div>
+              <h2 className="h2 mt-3 max-w-[520px] text-[#242424]">Reduce the cost of getting every asset on-brand.</h2>
+              <p className="type-body mt-4 max-w-[520px] text-[#666]">
+                ContextOS makes your team faster because AI starts with reusable truth instead of founder memory, scattered docs, and pasted briefs.
+              </p>
+            </div>
+            <div className="grid gap-3">
+              {["Bring your own model keys", "Exclude draft sources from generation", "Copy or export source-backed outputs"].map((item) => (
+                <div key={item} className="flex items-center gap-3 rounded-lg bg-white px-4 py-3">
+                  <Check size={16} className="text-[#555]" />
+                  <span className="type-body text-[#555]">{item}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="mx-auto max-w-[1040px] px-4 pb-20 sm:px-6 lg:px-8 lg:pb-24">
+          <div className="border-t border-[#eeeeee] pt-20 text-center lg:pt-24">
+            <h2 className="h2 text-[#242424]">Start with the ContextOS workspace.</h2>
+            <p className="type-body mx-auto mt-3 max-w-[520px] text-[#666]">
+              Open the prototype dashboard, review the source library, and generate your first grounded artifact.
+            </p>
+            <button onClick={onGetStarted} className="label mt-6 inline-flex h-10 items-center gap-2 rounded-lg bg-[#2b2b2b] px-4 text-white transition hover:-translate-y-0.5 hover:bg-[#333] active:scale-[0.98]">
+              Open dashboard <ChevronRight size={16} />
+            </button>
+          </div>
+        </section>
+      </main>
+
+      <footer className="border-t border-[#eeeeee]">
+        <div className="mx-auto flex max-w-[1160px] flex-col gap-4 px-4 py-8 type-caption text-[#888] sm:px-6 md:flex-row md:items-center md:justify-between lg:px-8">
+          <div>
+            <div className="type-card-title text-[#333]">ContextOS</div>
+            <div className="mt-1">Define once. Build with context.</div>
+          </div>
+          <div className="flex flex-wrap gap-5">
+            <a href="#product" className="hover:text-[#333]">Product</a>
+            <a href="#workflow" className="hover:text-[#333]">Workflow</a>
+            <a href="#outcomes" className="hover:text-[#333]">Outcomes</a>
+            <button onClick={onGetStarted} className="text-left hover:text-[#333]">Get started</button>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
@@ -2487,7 +2916,7 @@ export default function App() {
   if (!hasStarted) {
     return (
       <div style={brandTheme}>
-        <LandingPage onGetStarted={startProduct} />
+        <LandingPageV2 onGetStarted={startProduct} />
       </div>
     );
   }
