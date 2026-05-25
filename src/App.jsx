@@ -1,8 +1,8 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { createPortal } from "react-dom";
 import {
   Archive,
   ArrowRight,
-  ArrowUpRight,
   BadgeCheck,
   BarChart3,
   BookOpen,
@@ -836,15 +836,12 @@ function DefineView({ createRequest }) {
           </div>
         </div>
         </div>
-        {selectedSource && (
-          <aside className="fixed bottom-0 right-0 top-[64px] z-50 w-full max-w-[640px] overflow-y-auto border-l border-[#e5e5e5] bg-white shadow-[-18px_0_44px_rgba(0,0,0,0.10)]">
+        {selectedSource && createPortal(
+          <aside className="fixed inset-y-0 right-0 z-50 w-full max-w-[720px] overflow-y-auto border-l border-[#e5e5e5] bg-white shadow-[-18px_0_44px_rgba(0,0,0,0.10)]">
             <div className="sticky top-0 z-10 flex h-12 items-center justify-between border-b border-[#eeeeee] bg-white px-4">
               <div className="flex items-center gap-2 text-[#777]">
                 <button onClick={() => setSelectedSourceIndex(null)} className="rounded-lg p-1.5 hover:bg-[#f5f5f5]" title="Close source page">
                   <ChevronRight size={18} className="rotate-180" />
-                </button>
-                <button className="rounded-lg p-1.5 hover:bg-[#f5f5f5]" title="Expand">
-                  <ArrowUpRight size={17} />
                 </button>
               </div>
               <div className="flex items-center gap-2">
@@ -852,7 +849,7 @@ function DefineView({ createRequest }) {
                 <MoreHorizontal size={18} className="text-[#777]" />
               </div>
             </div>
-            <div className="mx-auto max-w-[520px] px-8 py-10">
+            <div className="mx-auto max-w-[560px] px-8 py-10">
               <div className="mb-6">
                 {(() => {
                   const { Icon, color } = sourceIcon(selectedSource.type);
@@ -865,25 +862,65 @@ function DefineView({ createRequest }) {
                 className="h1 w-full border-0 bg-transparent p-0 text-[#2f2f2f] outline-none"
               />
               <div className="mt-6 space-y-3 border-b border-[#eeeeee] pb-6">
+                <div className="grid grid-cols-[120px_minmax(0,1fr)] items-center gap-3">
+                  <div className="caption text-[#999]">Type</div>
+                  <select
+                    value={selectedSource.type}
+                    onChange={(event) => updateSource({ type: event.target.value })}
+                    className="body-sm rounded-md border border-transparent bg-transparent px-2 py-1 text-[#555] outline-none hover:border-[#e5e5e5] hover:bg-[#fafafa]"
+                  >
+                    <option>Manual</option>
+                    <option>Notes</option>
+                    <option>Doc</option>
+                    <option>Image</option>
+                  </select>
+                </div>
+                <div className="grid grid-cols-[120px_minmax(0,1fr)] items-center gap-3">
+                  <div className="caption text-[#999]">Used by</div>
+                  <input
+                    value={selected.title}
+                    readOnly
+                    className="body-sm rounded-md border border-transparent bg-transparent px-2 py-1 text-[#555] outline-none"
+                  />
+                </div>
+                <div className="grid grid-cols-[120px_minmax(0,1fr)] items-center gap-3">
+                  <div className="caption text-[#999]">Status</div>
+                  <select
+                    value={selectedSource.status || "Draft"}
+                    onChange={(event) => updateSource({ status: event.target.value })}
+                    className="body-sm rounded-md border border-transparent bg-transparent px-2 py-1 text-[#555] outline-none hover:border-[#e5e5e5] hover:bg-[#fafafa]"
+                  >
+                    <option>Draft</option>
+                    <option>Ready</option>
+                    <option>Needs context</option>
+                  </select>
+                </div>
+              </div>
+              <div className="mt-6 flex flex-wrap gap-2">
                 {[
-                  ["Type", selectedSource.type],
-                  ["Used by", selected.title],
-                  ["Updated", "Just now"],
-                ].map(([label, value]) => (
-                  <div key={label} className="grid grid-cols-[120px_minmax(0,1fr)] items-center gap-3">
-                    <div className="caption text-[#999]">{label}</div>
-                    <div className="body-sm text-[#555]">{value}</div>
-                  </div>
+                  ["Text", "Add a paragraph block"],
+                  ["Heading", "Add a heading block"],
+                  ["Bullets", "Add bullet notes"],
+                ].map(([label, text]) => (
+                  <button
+                    key={label}
+                    onClick={() => updateSource({ content: `${sourcePreview(selectedSource)}\n\n${text}` })}
+                    className="label rounded-lg border border-[#e5e5e5] bg-white px-3 py-1.5 text-[#555] hover:bg-[#f7f7f7]"
+                  >
+                    + {label}
+                  </button>
                 ))}
               </div>
               <textarea
                 value={sourcePreview(selectedSource)}
                 onChange={(event) => updateSource({ content: event.target.value })}
-                rows={14}
-                className="body-lg mt-8 w-full resize-none border-0 bg-transparent p-0 text-[#444] outline-none placeholder:text-[#999]"
+                rows={16}
+                placeholder="Type '/' for commands, or paste notes, research, links, and raw source context..."
+                className="body-lg mt-6 w-full resize-none border-0 bg-transparent p-0 text-[#444] outline-none placeholder:text-[#999]"
               />
             </div>
-          </aside>
+          </aside>,
+          document.body
         )}
       </section>
     </div>
