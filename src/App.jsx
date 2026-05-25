@@ -775,7 +775,7 @@ function DefineView({ createRequest }) {
           </div>
         </div>
 
-        <div className={`grid gap-8 ${selectedSource ? "xl:grid-cols-[minmax(0,720px)_340px]" : ""}`}>
+        <div>
         <div className="max-w-[760px]">
           <div className="mb-6 flex items-center gap-4">
             <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-[#f1f1f1] text-[#333]"><SelectedIcon size={22} /></div>
@@ -835,26 +835,56 @@ function DefineView({ createRequest }) {
             </div>
           </div>
         </div>
+        </div>
         {selectedSource && (
-          <aside className="rounded-lg border border-[#e6e6e6] bg-[#fafafa] p-4 xl:sticky xl:top-20 xl:self-start">
-            <div className="mb-4 flex items-center justify-between gap-3">
-              <div className="flex min-w-0 items-center gap-3">
+          <aside className="fixed bottom-0 right-0 top-[64px] z-50 w-full max-w-[640px] overflow-y-auto border-l border-[#e5e5e5] bg-white shadow-[-18px_0_44px_rgba(0,0,0,0.10)]">
+            <div className="sticky top-0 z-10 flex h-12 items-center justify-between border-b border-[#eeeeee] bg-white px-4">
+              <div className="flex items-center gap-2 text-[#777]">
+                <button onClick={() => setSelectedSourceIndex(null)} className="rounded-lg p-1.5 hover:bg-[#f5f5f5]" title="Close source page">
+                  <ChevronRight size={18} className="rotate-180" />
+                </button>
+                <button className="rounded-lg p-1.5 hover:bg-[#f5f5f5]" title="Expand">
+                  <ArrowUpRight size={17} />
+                </button>
+              </div>
+              <div className="flex items-center gap-2">
+                <button className="label rounded-lg px-2 py-1 text-[#555] hover:bg-[#f5f5f5]">Share</button>
+                <MoreHorizontal size={18} className="text-[#777]" />
+              </div>
+            </div>
+            <div className="mx-auto max-w-[520px] px-8 py-10">
+              <div className="mb-6">
                 {(() => {
                   const { Icon, color } = sourceIcon(selectedSource.type);
-                  return <Icon size={22} strokeWidth={1.8} className="shrink-0" style={{ color }} />;
+                  return <Icon size={34} strokeWidth={1.7} style={{ color }} />;
                 })()}
-                <div className="min-w-0">
-                  <div className="type-label text-[#999]">Source page</div>
-                  <div className="type-card-title truncate text-[#333]">{selectedSource.label}</div>
-                </div>
               </div>
-              <button onClick={() => setSelectedSourceIndex(null)} className="label rounded-lg px-2 py-1 text-[#777] hover:bg-[#eeeeee]">Close</button>
+              <input
+                value={selectedSource.label}
+                onChange={(event) => updateSource({ label: event.target.value })}
+                className="h1 w-full border-0 bg-transparent p-0 text-[#2f2f2f] outline-none"
+              />
+              <div className="mt-6 space-y-3 border-b border-[#eeeeee] pb-6">
+                {[
+                  ["Type", selectedSource.type],
+                  ["Used by", selected.title],
+                  ["Updated", "Just now"],
+                ].map(([label, value]) => (
+                  <div key={label} className="grid grid-cols-[120px_minmax(0,1fr)] items-center gap-3">
+                    <div className="caption text-[#999]">{label}</div>
+                    <div className="body-sm text-[#555]">{value}</div>
+                  </div>
+                ))}
+              </div>
+              <textarea
+                value={sourcePreview(selectedSource)}
+                onChange={(event) => updateSource({ content: event.target.value })}
+                rows={14}
+                className="body-lg mt-8 w-full resize-none border-0 bg-transparent p-0 text-[#444] outline-none placeholder:text-[#999]"
+              />
             </div>
-            <input value={selectedSource.label} onChange={(event) => updateSource({ label: event.target.value })} className="h4 w-full rounded-lg border border-[#dddddd] bg-white px-3 py-2 text-[#333] outline-none focus:border-[#aaa]" />
-            <textarea value={sourcePreview(selectedSource)} onChange={(event) => updateSource({ content: event.target.value })} rows={9} className="type-body mt-3 w-full resize-none rounded-lg border border-[#dddddd] bg-white px-3 py-3 text-[#555] outline-none focus:border-[#aaa]" />
           </aside>
         )}
-        </div>
       </section>
     </div>
   );
