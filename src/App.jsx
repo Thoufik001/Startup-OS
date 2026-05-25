@@ -1598,7 +1598,7 @@ function MobileBottomNav({ active, setActive }) {
 
   return (
     <nav className="fixed inset-x-0 bottom-3 z-40 flex justify-center px-3 lg:hidden">
-      <div className="grid w-full max-w-[460px] grid-cols-3 gap-1 rounded-2xl border border-[#e5e5e5] bg-white/94 p-1 shadow-[0_14px_38px_rgba(0,0,0,0.14)] backdrop-blur">
+      <div className="grid w-full max-w-[460px] grid-cols-[1.34fr_0.83fr_0.83fr] gap-1 rounded-2xl border border-[#e5e5e5] bg-white/94 p-1 shadow-[0_14px_38px_rgba(0,0,0,0.14)] backdrop-blur">
         {items.map((item) => {
           const Icon = item.icon;
           const selected = active === item.id;
