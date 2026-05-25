@@ -646,30 +646,27 @@ function DefineView() {
         </div>
 
         <div className="mb-5 rounded-lg border border-[#e9e9e9] bg-white p-4">
-          <div className="flex items-start gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#fff7f2] text-[#e56f4d]"><Sparkles size={20} /></div>
-            <div className="min-w-0 flex-1">
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <div className="type-card-title text-[#333]">Source coverage</div>
-                  <div className="type-body mt-1 text-[#777]">4 of 7 context pages have enough detail for basic GTM output.</div>
-                </div>
-                <div className="shrink-0 text-right">
-                  <div className="text-[24px] font-semibold leading-none tracking-[-0.04em] text-[#333]">57%</div>
-                  <div className="type-caption mt-1 text-[#999]">Filled</div>
-                </div>
+          <div className="min-w-0">
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <div className="type-card-title text-[#333]">Source coverage</div>
+                <div className="type-body mt-1 text-[#777]">4 of 7 context pages have enough detail for basic GTM output.</div>
               </div>
-              <div className="mt-4 flex h-8 items-center gap-[3px] overflow-hidden">
-                {Array.from({ length: 24 }).map((_, index) => (
-                  <span
-                    key={index}
-                    className="h-7 w-1.5 rounded-full bg-[var(--context-warm)]"
-                    style={{ opacity: index < 14 ? 1 : 0.18 }}
-                  />
-                ))}
+              <div className="shrink-0 text-right">
+                <div className="text-[24px] font-semibold leading-none tracking-[-0.04em] text-[#333]">57%</div>
+                <div className="type-caption mt-1 text-[#999]">Filled</div>
               </div>
-              <div className="type-caption mt-2 text-[#888]">Needs proof, competitor notes, and design references.</div>
             </div>
+            <div className="mt-4 flex h-8 items-center gap-[3px] overflow-hidden">
+              {Array.from({ length: 24 }).map((_, index) => (
+                <span
+                  key={index}
+                  className="h-7 w-1.5 rounded-full bg-[var(--context-warm)]"
+                  style={{ opacity: index < 14 ? 1 : 0.18 }}
+                />
+              ))}
+            </div>
+            <div className="type-caption mt-2 text-[#888]">Needs proof, competitor notes, and design references.</div>
           </div>
         </div>
 
