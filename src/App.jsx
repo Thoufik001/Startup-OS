@@ -18,6 +18,7 @@ import {
   Folder,
   Globe2,
   GripVertical,
+  Home,
   Inbox,
   Layers3,
   List,
@@ -1712,7 +1713,7 @@ function WorkspaceTopbar({ active, setActive }) {
     build: "Build",
   };
   const mobileMenuItems = [
-    ["dashboard", "Dashboard", Globe2],
+    ["dashboard", "Home", Home],
     ["define", "Define sources", BookOpen],
     ["build", "Build artifacts", Bot],
   ];
@@ -1880,14 +1881,14 @@ function WorkspaceTopbar({ active, setActive }) {
 
 function MobileBottomNav({ active, setActive }) {
   const items = [
-    { id: "dashboard", label: "Dashboard", icon: Globe2 },
+    { id: "dashboard", label: "Home", icon: Home },
     { id: "define", label: "Define", icon: BookOpen },
     { id: "build", label: "Build", icon: Bot },
   ];
 
   return (
     <nav className="fixed inset-x-0 bottom-3 z-40 flex justify-center px-3 lg:hidden">
-      <div className="grid w-full max-w-[460px] grid-cols-[1.34fr_0.83fr_0.83fr] gap-1 rounded-2xl border border-[#e5e5e5] bg-white/94 p-1 shadow-[0_14px_38px_rgba(0,0,0,0.14)] backdrop-blur">
+      <div className="grid w-full max-w-[460px] grid-cols-3 gap-1 rounded-2xl border border-[#e5e5e5] bg-white/94 p-1 shadow-[0_14px_38px_rgba(0,0,0,0.14)] backdrop-blur">
         {items.map((item) => {
           const Icon = item.icon;
           const selected = active === item.id;
