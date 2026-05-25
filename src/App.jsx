@@ -505,7 +505,7 @@ function DashboardV2({ setActive }) {
   ];
   const keyMetrics = [
     { label: "Source coverage", value: "4/7", detail: "Core context blocks filled" },
-    { label: "Traceability", value: "62%", detail: "Sources and web citations attached" },
+    { label: "Traceability", value: "62%", detail: "RAG + web citations" },
   ];
   const recentArtifacts = [
     ["Founder LinkedIn post", "12 min ago"],
@@ -541,7 +541,7 @@ function DashboardV2({ setActive }) {
               <div key={metric.label} className="flex min-h-32 flex-col justify-between rounded-lg bg-[#f7f7f7] p-4">
                 <div className="type-label text-[#999]">{metric.label}</div>
                 <div>
-                  <div className="h1 text-[#262626]">{metric.value}</div>
+                  <div className="display text-[#262626]">{metric.value}</div>
                   <div className="type-caption mt-2 text-[#777]">{metric.detail}</div>
                 </div>
               </div>
