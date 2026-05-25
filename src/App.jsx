@@ -2708,7 +2708,7 @@ function LandingPageV2({ onGetStarted }) {
             Brand memory for startup teams
           </div>
           <h1 className="landing-reveal display mx-auto mt-5 max-w-[820px] text-[#202020]" style={{ "--delay": "80ms" }}>
-            Give your brand a brain. Build GTM assets that know what to say.
+            Give your brand a brain that builds GTM assets with the right context.
           </h1>
           <p className="landing-reveal body-lg mx-auto mt-4 max-w-[680px] text-[#666]" style={{ "--delay": "140ms" }}>
             ContextOS helps founders, PMs, and GTM teams keep positioning, proof, customer notes, and design references ready for consistent content, sales, and launch assets.
