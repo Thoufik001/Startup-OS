@@ -659,8 +659,14 @@ function DefineView() {
                   <div className="type-caption mt-1 text-[#999]">Filled</div>
                 </div>
               </div>
-              <div className="mt-4 h-2 rounded-full bg-[#ececec]">
-                <div className="h-2 rounded-full bg-[var(--context-warm)]" style={{ width: "57%" }} />
+              <div className="mt-4 flex h-8 items-center gap-[3px] overflow-hidden">
+                {Array.from({ length: 24 }).map((_, index) => (
+                  <span
+                    key={index}
+                    className="h-7 w-1.5 rounded-full bg-[var(--context-warm)]"
+                    style={{ opacity: index < 14 ? 1 : 0.18 }}
+                  />
+                ))}
               </div>
               <div className="type-caption mt-2 text-[#888]">Needs proof, competitor notes, and design references.</div>
             </div>
