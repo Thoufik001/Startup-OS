@@ -330,24 +330,34 @@ function LeftSidebar({ active, setActive, collapsed, setCollapsed, sidebarWidth,
               {contextAction && (
                 <button
                   onClick={contextAction.onClick}
-                  className="mb-4 flex h-9 w-full items-center justify-center gap-2 rounded-lg bg-[var(--brand-accent)] px-3 text-sm font-medium text-white transition hover:bg-[var(--brand-accent-hover)]"
+                  className="mb-4 flex h-9 w-full items-center justify-between rounded-lg bg-[var(--brand-accent)] px-3 text-sm font-medium text-white transition hover:bg-[var(--brand-accent-hover)]"
                 >
-                  <contextAction.Icon size={15} /> {contextAction.label}
+                  <span className="flex items-center gap-2">
+                    <contextAction.Icon size={15} /> {contextAction.label}
+                  </span>
+                  <span className="rounded-md bg-white/12 px-1.5 py-0.5 text-[11px] font-medium text-white/72">Cmd N</span>
                 </button>
               )}
-              <div className="mb-2 type-label text-[#999]">{contextLabel}</div>
-              <div className="space-y-1">
-                {contextItems.map((item) => (
-                  <button
-                    key={item}
-                    onClick={() => setActive(active === "define" ? "define" : "build")}
-                    className="flex w-full items-center justify-between gap-3 rounded-lg px-2 py-2 text-left text-sm text-[#555] transition hover:bg-[#f5f5f5] hover:text-[#222]"
-                  >
-                    <span className="min-w-0 truncate">{item}</span>
-                    <ChevronRight size={14} className="shrink-0 text-[#aaa]" />
-                  </button>
-                ))}
-              </div>
+              <button
+                onClick={() => setRecentSectionOpen((open) => !open)}
+                className="mb-2 flex w-full items-center justify-between rounded-lg px-1 py-1 text-left type-label text-[#999] transition hover:bg-[#f5f5f5] hover:text-[#555]"
+              >
+                <span>{contextLabel}</span>
+                <ChevronRight size={14} className={`shrink-0 transition-transform duration-200 ${recentSectionOpen ? "rotate-90" : ""}`} />
+              </button>
+              {recentSectionOpen && (
+                <div className="space-y-1">
+                  {contextItems.map((item) => (
+                    <button
+                      key={item}
+                      onClick={() => setActive(active === "define" ? "define" : "build")}
+                      className="flex w-full items-center rounded-lg px-2 py-2 text-left text-sm text-[#555] transition hover:bg-[#f5f5f5] hover:text-[#222]"
+                    >
+                      <span className="min-w-0 truncate">{item}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
           )}
 
