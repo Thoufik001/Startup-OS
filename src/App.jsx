@@ -592,6 +592,7 @@ function DefineView() {
   const [selectedId, setSelectedId] = useState(knowledge[0].id);
   const [editing, setEditing] = useState(false);
   const [mobileDetailOpen, setMobileDetailOpen] = useState(false);
+  const [selectedSourceIndex, setSelectedSourceIndex] = useState(null);
   const selected = sourcePages.find((item) => item.id === selectedId) || sourcePages[0];
   const SelectedIcon = selected.icon;
   const updateSelected = (patch) => {
@@ -624,14 +625,29 @@ function DefineView() {
     setMobileDetailOpen(false);
   };
   const attachSource = (type) => {
-    const label = type === "Image" ? "Image reference" : type === "Doc" ? "Uploaded doc" : "Pasted note";
+    const label = type === "Image" ? "Image reference" : type === "Doc" ? "Uploaded doc" : type === "Manual" ? "Untitled page" : "Pasted text";
     updateSelected({ sources: [...selected.sources, { label, type }] });
+    setSelectedSourceIndex(selected.sources.length);
+  };
+  const selectedSource = selected.sources[selectedSourceIndex] || null;
+  const updateSource = (patch) => {
+    if (selectedSourceIndex === null) return;
+    updateSelected({
+      sources: selected.sources.map((source, index) => index === selectedSourceIndex ? { ...source, ...patch } : source),
+    });
   };
   const sourcePreview = (file) => {
+    if (file.content) return file.content;
     if (file.type === "Manual") return selected.synopsis || "Add the short manual synopsis for this source block.";
     if (file.type === "Image") return "Visual references and grouped examples that Build can use for design-aware artifacts.";
     if (file.type === "Doc" || file.type === "Slides") return "Uploaded material that will be extracted, summarized, and cited when Build uses this block.";
     return "Pasted working notes, raw observations, call snippets, or founder memory for this source.";
+  };
+  const sourceIcon = (type) => {
+    if (type === "Image") return { Icon: Layers3, color: appColors.sourceBlue };
+    if (type === "Note" || type === "Notes") return { Icon: MessageSquareText, color: appColors.sourceGreen };
+    if (type === "Manual") return { Icon: BookOpen, color: appColors.sourceRed };
+    return { Icon: FileText, color: "#555555" };
   };
 
   return (
@@ -681,7 +697,7 @@ function DefineView() {
               return (
                 <button
                   key={item.id}
-                  onClick={() => { setSelectedId(item.id); setEditing(false); setMobileDetailOpen(true); }}
+                  onClick={() => { setSelectedId(item.id); setEditing(false); setSelectedSourceIndex(null); setMobileDetailOpen(true); }}
                   className={`flex w-full gap-4 border-b border-[#f0f0f0] px-4 py-4 text-left transition last:border-0 ${active ? 'bg-[#f7f7f7]' : 'bg-white hover:bg-[#fafafa]'}`}
                 >
                   <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[#f3f3f3] text-[#555]"><Icon size={18} /></div>
@@ -713,6 +729,7 @@ function DefineView() {
           </div>
         </div>
 
+        <div className={`grid gap-8 ${selectedSource ? "xl:grid-cols-[minmax(0,720px)_340px]" : ""}`}>
         <div className="max-w-[760px]">
           <div className="mb-6 flex items-center gap-4">
             <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-[#f1f1f1] text-[#333]"><SelectedIcon size={22} /></div>
@@ -759,27 +776,38 @@ function DefineView() {
                 </button>
               </div>
             </div>
-            <div className="space-y-3">
+            <div className="space-y-2">
               {selected.sources.map((file, i) => (
-                <div key={`${file.label}-${i}`} className="group">
-                  <div className="flex items-start gap-3">
-                    <FileText size={24} strokeWidth={1.8} className="mt-0.5 shrink-0 text-[#8f8f8f]" />
-                    <div className="min-w-0 flex-1">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <div className="inline border-b border-[#d9d9d9] text-[18px] font-semibold leading-7 text-[#333] group-hover:border-[#999]">{file.label}</div>
-                        <span className="type-caption rounded-md bg-[#f3f3f3] px-2 py-0.5 text-[#777]">{file.type}</span>
-                      </div>
-                      {editing && file.type === "Manual" ? (
-                        <textarea value={selected.synopsis} onChange={(event) => updateSelected({ synopsis: event.target.value, description: event.target.value })} rows={4} placeholder="Write the manual synopsis..." className="type-body mt-3 w-full resize-none rounded-lg border border-[#dddddd] bg-[#fafafa] px-3 py-3 text-[#444] outline-none focus:border-[#aaa]" />
-                      ) : (
-                        <p className="type-body mt-1 max-w-[620px] text-[#666]">{sourcePreview(file)}</p>
-                      )}
-                    </div>
-                  </div>
-                </div>
+                <button key={`${file.label}-${i}`} onClick={() => setSelectedSourceIndex(i)} className="group flex w-full items-center gap-3 rounded-lg px-1 py-1.5 text-left hover:bg-[#f7f7f7]">
+                  {(() => {
+                    const { Icon, color } = sourceIcon(file.type);
+                    return <Icon size={25} strokeWidth={1.8} className="shrink-0" style={{ color }} />;
+                  })()}
+                  <span className="inline max-w-full truncate border-b border-[#d9d9d9] text-[18px] font-semibold leading-7 text-[#333] group-hover:border-[#999]">{file.label}</span>
+                </button>
               ))}
             </div>
           </div>
+        </div>
+        {selectedSource && (
+          <aside className="rounded-lg border border-[#e6e6e6] bg-[#fafafa] p-4 xl:sticky xl:top-20 xl:self-start">
+            <div className="mb-4 flex items-center justify-between gap-3">
+              <div className="flex min-w-0 items-center gap-3">
+                {(() => {
+                  const { Icon, color } = sourceIcon(selectedSource.type);
+                  return <Icon size={22} strokeWidth={1.8} className="shrink-0" style={{ color }} />;
+                })()}
+                <div className="min-w-0">
+                  <div className="type-label text-[#999]">Source page</div>
+                  <div className="type-card-title truncate text-[#333]">{selectedSource.label}</div>
+                </div>
+              </div>
+              <button onClick={() => setSelectedSourceIndex(null)} className="rounded-lg px-2 py-1 text-sm text-[#777] hover:bg-[#eeeeee]">Close</button>
+            </div>
+            <input value={selectedSource.label} onChange={(event) => updateSource({ label: event.target.value })} className="w-full rounded-lg border border-[#dddddd] bg-white px-3 py-2 text-[18px] font-semibold text-[#333] outline-none focus:border-[#aaa]" />
+            <textarea value={sourcePreview(selectedSource)} onChange={(event) => updateSource({ content: event.target.value })} rows={9} className="type-body mt-3 w-full resize-none rounded-lg border border-[#dddddd] bg-white px-3 py-3 text-[#555] outline-none focus:border-[#aaa]" />
+          </aside>
+        )}
         </div>
       </section>
     </div>
