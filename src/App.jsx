@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   Archive,
   ArrowRight,
@@ -204,7 +204,7 @@ function IconRail({ active, setActive }) {
   );
 }
 
-function LeftSidebar({ active, setActive, collapsed, setCollapsed, sidebarWidth, setSidebarWidth }) {
+function LeftSidebar({ active, setActive, collapsed, setCollapsed, sidebarWidth, setSidebarWidth, onCreateSource }) {
   const mainNav = [
     ["dashboard", "Brand Dashboard", Globe2],
     ["define", "Define Sources", BookOpen],
@@ -223,6 +223,15 @@ function LeftSidebar({ active, setActive, collapsed, setCollapsed, sidebarWidth,
   ];
 
   const recentMenuItems = ["Open", "Rename", "Duplicate", "Move to archive", "Delete"];
+  const recentSources = knowledge.slice(0, 4).map((item) => item.title);
+  const recentBuildArtifacts = artifacts.slice(0, 4).map((item) => item.title);
+  const contextLabel = active === "define" ? "Recent sources" : active === "build" ? "Recent artifacts" : null;
+  const contextItems = active === "define" ? recentSources : active === "build" ? recentBuildArtifacts : [];
+  const contextAction = active === "define"
+    ? { label: "New Source", Icon: Plus, onClick: onCreateSource }
+    : active === "build"
+      ? { label: "New Artifact", Icon: Plus, onClick: () => setActive("build") }
+      : null;
 
   const startResize = (event) => {
     if (collapsed) return;
@@ -315,6 +324,32 @@ function LeftSidebar({ active, setActive, collapsed, setCollapsed, sidebarWidth,
               </button>
             ))}
           </div>
+
+          {!collapsed && contextLabel && (
+            <div className="mt-6 border-t border-[#eeeeee] pt-4">
+              {contextAction && (
+                <button
+                  onClick={contextAction.onClick}
+                  className="mb-4 flex h-9 w-full items-center justify-center gap-2 rounded-lg bg-[var(--brand-accent)] px-3 text-sm font-medium text-white transition hover:bg-[var(--brand-accent-hover)]"
+                >
+                  <contextAction.Icon size={15} /> {contextAction.label}
+                </button>
+              )}
+              <div className="mb-2 type-label text-[#999]">{contextLabel}</div>
+              <div className="space-y-1">
+                {contextItems.map((item) => (
+                  <button
+                    key={item}
+                    onClick={() => setActive(active === "define" ? "define" : "build")}
+                    className="flex w-full items-center justify-between gap-3 rounded-lg px-2 py-2 text-left text-sm text-[#555] transition hover:bg-[#f5f5f5] hover:text-[#222]"
+                  >
+                    <span className="min-w-0 truncate">{item}</span>
+                    <ChevronRight size={14} className="shrink-0 text-[#aaa]" />
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
 
         </div>
 
@@ -577,7 +612,7 @@ function DashboardV2({ setActive }) {
     </div>
   );
 }
-function DefineView() {
+function DefineView({ createRequest }) {
   const makeSourcePage = (item, index) => ({
     ...item,
     synopsis: item.description,
@@ -616,6 +651,9 @@ function DefineView() {
     setEditing(true);
     setMobileDetailOpen(true);
   };
+  useEffect(() => {
+    if (createRequest > 0) addPage();
+  }, [createRequest]);
   const deletePage = () => {
     if (sourcePages.length === 1) return;
     const remaining = sourcePages.filter((page) => page.id !== selected.id);
@@ -658,7 +696,6 @@ function DefineView() {
             <div className="type-page-title text-[#333]">Define Sources</div>
             <div className="type-body mt-1 text-[#777]">Notion-style context pages for Build</div>
           </div>
-          <button onClick={addPage} className="flex h-9 items-center gap-2 rounded-lg bg-[var(--brand-accent)] px-3 text-sm font-medium text-white shadow-sm"><Plus size={15} /> New</button>
         </div>
 
         <div className="mb-5 rounded-lg border border-[#e9e9e9] bg-white p-4">
@@ -1666,6 +1703,7 @@ export default function App() {
   const [transitionDirection, setTransitionDirection] = useState(1);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [sidebarWidth, setSidebarWidth] = useState(280);
+  const [createSourceRequest, setCreateSourceRequest] = useState(0);
   const viewOrder = ["dashboard", "define", "build"];
   const brandTheme = {
     "--brand-accent": companyProfile.brandAccent,
@@ -1702,6 +1740,10 @@ export default function App() {
           setCollapsed={setSidebarCollapsed}
           sidebarWidth={sidebarWidth}
           setSidebarWidth={setSidebarWidth}
+          onCreateSource={() => {
+            navigateTo("define");
+            setCreateSourceRequest((request) => request + 1);
+          }}
         />
         <main className="flex min-w-0 flex-1 flex-col bg-white">
           <WorkspaceTopbar active={active} setActive={navigateTo} />
@@ -1712,7 +1754,7 @@ export default function App() {
               style={{ "--content-enter-x": `${transitionDirection * 18}px` }}
             >
               {active === "dashboard" && <DashboardV2 setActive={navigateTo} />}
-              {active === "define" && <DefineView />}
+              {active === "define" && <DefineView createRequest={createSourceRequest} />}
               {active === "build" && <BuildStudioView />}
             </div>
           </div>
