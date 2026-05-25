@@ -572,58 +572,100 @@ function DashboardV2({ setActive }) {
   );
 }
 function DefineView() {
-  const [selected, setSelected] = useState(knowledge[0]);
+  const makeSourcePage = (item, index) => ({
+    ...item,
+    synopsis: item.description,
+    aiSummary: `${item.title} combines the saved synopsis, pasted notes, uploaded files, and manual source fields into one usable context block for Build.`,
+    sources: [
+      { label: "Synopsis form", type: "Manual" },
+      { label: index % 2 === 0 ? "Founder notes" : "Pasted notes", type: "Notes" },
+      { label: index % 3 === 0 ? "Reference deck" : "Source doc", type: index % 3 === 0 ? "Slides" : "Doc" },
+    ],
+  });
+  const [sourcePages, setSourcePages] = useState(() => knowledge.map(makeSourcePage));
+  const [selectedId, setSelectedId] = useState(knowledge[0].id);
+  const [editing, setEditing] = useState(false);
+  const [mobileDetailOpen, setMobileDetailOpen] = useState(false);
+  const selected = sourcePages.find((item) => item.id === selectedId) || sourcePages[0];
   const SelectedIcon = selected.icon;
+  const updateSelected = (patch) => {
+    setSourcePages((pages) => pages.map((page) => page.id === selected.id ? { ...page, ...patch, updated: "Just now" } : page));
+  };
+  const addPage = () => {
+    const page = {
+      id: `custom-${Date.now()}`,
+      title: "Untitled source",
+      description: "Describe what this source block should teach Build.",
+      synopsis: "",
+      aiSummary: "Add a synopsis, notes, and source files. The AI summary will combine them into a clean working context.",
+      status: "Draft",
+      updated: "Just now",
+      icon: BookOpen,
+      section: "Custom",
+      sources: [{ label: "Synopsis form", type: "Manual" }],
+    };
+    setSourcePages((pages) => [page, ...pages]);
+    setSelectedId(page.id);
+    setEditing(true);
+    setMobileDetailOpen(true);
+  };
+  const deletePage = () => {
+    if (sourcePages.length === 1) return;
+    const remaining = sourcePages.filter((page) => page.id !== selected.id);
+    setSourcePages(remaining);
+    setSelectedId(remaining[0].id);
+    setEditing(false);
+    setMobileDetailOpen(false);
+  };
+  const attachSource = (type) => {
+    const label = type === "Image" ? "Image reference" : type === "Doc" ? "Uploaded doc" : "Pasted note";
+    updateSelected({ sources: [...selected.sources, { label, type }] });
+  };
 
   return (
-    <div className="grid min-h-[calc(100vh-64px)] grid-cols-1 bg-[#fafafa] lg:grid-cols-[440px_minmax(0,1fr)]">
-      <section className="border-r border-[#ececec] bg-[#fafafa] p-6">
+    <div className="grid min-h-[calc(100vh-64px)] grid-cols-1 bg-[#fafafa] lg:grid-cols-[390px_minmax(0,1fr)]">
+      <section className={`${mobileDetailOpen ? "hidden lg:block" : "block"} border-r border-[#ececec] bg-[#fafafa] p-4 sm:p-6`}>
         <div className="mb-5 flex items-center justify-between">
           <div>
-            <div className="text-[26px] font-medium tracking-[-0.04em] text-[#444]">Define Sources</div>
-            <div className="mt-1 text-sm text-[#888]">Approved startup context</div>
+            <div className="type-page-title text-[#333]">Define Sources</div>
+            <div className="type-body mt-1 text-[#777]">Notion-style context pages for Build</div>
           </div>
-          <button className="rounded-lg bg-[var(--brand-accent)] px-4 py-2 text-sm font-medium text-white shadow-sm"><Plus size={15} className="inline" /> Add</button>
+          <button onClick={addPage} className="flex h-9 items-center gap-2 rounded-lg bg-[var(--brand-accent)] px-3 text-sm font-medium text-white shadow-sm"><Plus size={15} /> New</button>
         </div>
 
-        <div className="mb-5 rounded-lg border border-[#e9e9e9] bg-white p-4 shadow-[0_1px_2px_rgba(0,0,0,0.03)]">
-          <div className="flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-[#fff7f2] text-[#e56f4d]"><Sparkles size={22} /></div>
+        <div className="mb-5 rounded-lg border border-[#e9e9e9] bg-white p-4">
+          <div className="flex items-start gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#fff7f2] text-[#e56f4d]"><Sparkles size={20} /></div>
             <div>
-              <div className="font-medium text-[#333]">Context health</div>
-              <div className="text-sm text-[#777]">Core sources in progress</div>
-            </div>
-            <div className="ml-auto flex gap-[3px]">
-              {Array.from({ length: 22 }).map((_, i) => (
-                <span key={i} className="h-8 w-1.5 rounded-lg bg-[var(--context-warm)]" style={{ opacity: i > 17 ? 0.45 : 1 }} />
-              ))}
+              <div className="type-card-title text-[#333]">Source blocks</div>
+              <div className="type-body mt-1 text-[#777]">Each page can hold a form synopsis, pasted notes, docs, images, and an AI summary.</div>
             </div>
           </div>
         </div>
 
-        <div className="overflow-hidden rounded-lg border border-[#e9e9e9] bg-white shadow-[0_1px_2px_rgba(0,0,0,0.03)]">
+        <div className="overflow-hidden rounded-lg border border-[#e9e9e9] bg-white">
           <div className="flex items-center justify-between border-b border-[#eeeeee] px-5 py-4">
-            <div className="flex items-center gap-3 text-[20px] text-[#666]"><span className="h-5 w-5 rounded-md border border-[#d9d9d9]" /> Define library</div>
-            <MoreHorizontal size={18} className="text-[#8a8a8a]" />
+            <div className="type-section-title text-[#333]">Source library</div>
+            <div className="type-caption text-[#999]">{sourcePages.length} pages</div>
           </div>
           <div>
-            {knowledge.map((item) => {
+            {sourcePages.map((item) => {
               const Icon = item.icon;
               const active = selected.id === item.id;
               return (
                 <button
                   key={item.id}
-                  onClick={() => setSelected(item)}
-                  className={`flex w-full gap-4 border-b border-[#f0f0f0] px-5 py-5 text-left transition last:border-0 ${active ? 'bg-[#f7f7f7]' : 'bg-white hover:bg-[#fafafa]'}`}
+                  onClick={() => { setSelectedId(item.id); setEditing(false); setMobileDetailOpen(true); }}
+                  className={`flex w-full gap-4 border-b border-[#f0f0f0] px-4 py-4 text-left transition last:border-0 ${active ? 'bg-[#f7f7f7]' : 'bg-white hover:bg-[#fafafa]'}`}
                 >
-                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-[#f3f3f3] text-[#555]"><Icon size={18} /></div>
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[#f3f3f3] text-[#555]"><Icon size={18} /></div>
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center justify-between gap-4">
-                      <div className="truncate text-[16px] font-medium text-[#444]">{item.title}</div>
-                      <div className="shrink-0 text-sm text-[#777]">{item.updated}</div>
+                      <div className="type-card-title truncate text-[#333]">{item.title}</div>
+                      <ChevronRight size={16} className="shrink-0 text-[#aaa] lg:hidden" />
                     </div>
-                    <div className="mt-1 text-sm text-[#777]">{item.section}</div>
-                    <p className="mt-3 line-clamp-2 text-[14px] leading-6 text-[#555]">{item.description}</p>
+                    <div className="type-caption mt-1 text-[#888]">{item.section} · {item.updated}</div>
+                    <p className="type-body mt-2 line-clamp-2 text-[#555]">{item.synopsis || item.description}</p>
                   </div>
                 </button>
               );
@@ -632,39 +674,64 @@ function DefineView() {
         </div>
       </section>
 
-      <section className="overflow-y-auto bg-white px-10 py-8">
-        <div className="mb-8 flex items-center gap-3">
-          <button className="rounded-lg border border-[#e7e7e7] bg-white p-2 text-[#777] hover:bg-[#f8f8f8]"><Archive size={18} /></button>
-          <button className="rounded-lg border border-[#e7e7e7] bg-white p-2 text-[#777] hover:bg-[#f8f8f8]"><Trash2 size={18} /></button>
-          <button className="rounded-lg border border-[#e7e7e7] bg-white p-2 text-[#777] hover:bg-[#f8f8f8]"><MailPlus size={18} /></button>
+      <section className={`${mobileDetailOpen ? "block" : "hidden lg:block"} overflow-y-auto bg-white px-4 py-5 sm:px-8 lg:px-10 lg:py-8`}>
+        <div className="mb-6 flex items-center justify-between gap-3">
+          <button onClick={() => setMobileDetailOpen(false)} className="flex h-9 items-center gap-2 rounded-lg border border-[#e7e7e7] bg-white px-3 text-sm text-[#555] hover:bg-[#f8f8f8] lg:hidden">
+            <ArrowRight size={15} className="rotate-180" /> Sources
+          </button>
+          <div className="ml-auto flex items-center gap-2">
+            <button onClick={() => setEditing((value) => !value)} className="h-9 rounded-lg border border-[#e7e7e7] bg-white px-3 text-sm font-medium text-[#555] hover:bg-[#f8f8f8]">
+              {editing ? "Done" : "Edit"}
+            </button>
+            <button onClick={deletePage} className="flex h-9 items-center gap-2 rounded-lg border border-[#e7e7e7] bg-white px-3 text-sm font-medium text-[#b42318] hover:bg-[#fff7f5]"><Trash2 size={15} /> Delete</button>
+          </div>
         </div>
 
         <div className="max-w-[760px]">
           <div className="mb-6 flex items-center gap-4">
-            <div className="flex h-14 w-14 items-center justify-center rounded-lg bg-[#f1f1f1] text-[#333]"><SelectedIcon size={24} /></div>
+            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-[#f1f1f1] text-[#333]"><SelectedIcon size={22} /></div>
             <div>
-              <div className="flex items-center gap-2 text-[24px] font-semibold tracking-[-0.03em] text-[#333]">{selected.title} <BadgeCheck size={18} className="text-[var(--verified-blue)]" /></div>
-              <div className="text-[17px] text-[#8a8a8a]">Section: {selected.section}</div>
+              {editing ? (
+                <input value={selected.title} onChange={(event) => updateSelected({ title: event.target.value })} className="w-full rounded-lg border border-[#dddddd] px-3 py-2 text-[22px] font-semibold text-[#333] outline-none focus:border-[#aaa]" />
+              ) : (
+                <div className="flex items-center gap-2 text-[24px] font-semibold tracking-[-0.03em] text-[#333]">{selected.title} <BadgeCheck size={18} className="text-[var(--verified-blue)]" /></div>
+              )}
+              <div className="type-body mt-1 text-[#8a8a8a]">Section: {selected.section}</div>
             </div>
           </div>
 
-          <h1 className="mt-8 text-[30px] font-semibold tracking-[-0.04em] text-[#333]">{selected.title} source page</h1>
-          <p className="mt-6 text-[18px] leading-8 text-[#555]">{selected.description}</p>
-          <p className="mt-6 text-[18px] leading-8 text-[#555]">This is treated as source-of-truth context for Build. Any artifact created from this workspace should follow this page unless the user explicitly selects another approved source.</p>
+          <div className="rounded-lg border border-[#e9e9e9] bg-[#fafafa] p-4 sm:p-5">
+            <div className="type-label text-[#999]">Synopsis form</div>
+            {editing ? (
+              <textarea value={selected.synopsis} onChange={(event) => updateSelected({ synopsis: event.target.value, description: event.target.value })} rows={5} placeholder="Write the source synopsis..." className="type-body mt-3 w-full resize-none rounded-lg border border-[#dddddd] bg-white px-3 py-3 text-[#444] outline-none focus:border-[#aaa]" />
+            ) : (
+              <p className="type-body mt-3 text-[#555]">{selected.synopsis || selected.description}</p>
+            )}
+          </div>
 
           <div className="mt-10">
-            <div className="mb-4 flex items-center gap-3 text-[17px] font-medium text-[#333]">Source status <span className="text-sm font-normal text-[#999]">Used by Build</span></div>
-            <div className="grid gap-3 md:grid-cols-3">
-              {['Approved claim', 'ICP note', 'GTM angle'].map((file, i) => (
-                <div key={file} className="rounded-lg border border-[#e8e8e8] bg-white p-4 shadow-[0_1px_2px_rgba(0,0,0,0.03)]">
+            <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <div className="type-section-title text-[#333]">Sources</div>
+                <div className="type-body text-[#777]">Manual forms, notes, uploaded docs, and visual references.</div>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <button onClick={() => attachSource("Note")} className="h-8 rounded-lg border border-[#dedede] px-3 text-sm text-[#555] hover:bg-[#f7f7f7]">Paste note</button>
+                <button onClick={() => attachSource("Doc")} className="h-8 rounded-lg border border-[#dedede] px-3 text-sm text-[#555] hover:bg-[#f7f7f7]">Upload doc</button>
+                <button onClick={() => attachSource("Image")} className="h-8 rounded-lg border border-[#dedede] px-3 text-sm text-[#555] hover:bg-[#f7f7f7]">Add image</button>
+              </div>
+            </div>
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {selected.sources.map((file, i) => (
+                <div key={`${file.label}-${i}`} className="rounded-lg border border-[#e8e8e8] bg-white p-4">
                   <div className="flex items-center gap-3">
                     <div
                       className="flex h-9 w-9 items-center justify-center rounded-lg text-white"
                       style={{ backgroundColor: i === 0 ? appColors.sourceRed : i === 1 ? appColors.sourceBlue : appColors.sourceGreen }}
                     ><FileText size={17} /></div>
                     <div>
-                      <div className="text-sm font-medium text-[#444]">{file}</div>
-                      <div className="text-xs text-[#888]">{i === 0 ? '2 MB' : i === 1 ? '1.5 MB' : '234 KB'}</div>
+                      <div className="type-card-title text-[#444]">{file.label}</div>
+                      <div className="type-caption text-[#888]">{file.type}</div>
                     </div>
                   </div>
                 </div>
@@ -674,13 +741,17 @@ function DefineView() {
 
           <div className="mt-10 border-t border-[#ededed] pt-8">
             <div className="mb-4 flex items-center gap-4">
-              <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-[#f1f1f1]"><PanelRightOpen size={20} /></div>
+              <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-[#f1f1f1]"><Sparkles size={20} /></div>
               <div>
-                <div className="text-[20px] font-semibold text-[#333]">Build behavior rules</div>
-                <div className="text-[16px] text-[#8a8a8a]">This source controls how AI artifacts should be generated.</div>
+                <div className="type-section-title text-[#333]">AI summary</div>
+                <div className="type-body text-[#8a8a8a]">Generated from every source attached to this block.</div>
               </div>
             </div>
-            <p className="text-[17px] leading-8 text-[#555]">Avoid generic claims. When proof is missing, Build should warn the user instead of inventing numbers or unsupported customer outcomes.</p>
+            {editing ? (
+              <textarea value={selected.aiSummary} onChange={(event) => updateSelected({ aiSummary: event.target.value })} rows={4} className="type-body w-full resize-none rounded-lg border border-[#dddddd] px-3 py-3 text-[#555] outline-none focus:border-[#aaa]" />
+            ) : (
+              <p className="type-body text-[#555]">{selected.aiSummary}</p>
+            )}
           </div>
         </div>
       </section>
