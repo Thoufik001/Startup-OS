@@ -478,7 +478,7 @@ function DashboardV2({ setActive }) {
   return (
     <div className="mx-auto min-h-full max-w-[1120px] px-4 py-5 pb-24 sm:px-6 lg:py-7">
       <section className="rounded-lg border border-[#e6e6e6] bg-white p-5 sm:p-6">
-        <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_420px] lg:items-start">
+        <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_560px] xl:items-start">
           <div>
             <div className="type-label text-[#999]">Context health</div>
             <h1 className="type-page-title mt-2 max-w-[720px] text-[#262626]">
@@ -488,7 +488,7 @@ function DashboardV2({ setActive }) {
               Positioning and ICP are strong. Proof and design references need work before generating stronger sales and landing page assets.
             </p>
           </div>
-          <div className="grid gap-2 sm:grid-cols-3 lg:grid-cols-1">
+          <div className="grid gap-2 sm:grid-cols-3">
             {keyMetrics.map((metric) => (
               <div key={metric.label} className="rounded-lg bg-[#f7f7f7] px-4 py-3">
                 <div className="type-label text-[#999]">{metric.label}</div>
@@ -499,7 +499,7 @@ function DashboardV2({ setActive }) {
           </div>
         </div>
 
-        <div className="mt-6 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-5 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
           {healthItems.map((item) => (
             <button key={item.label} onClick={() => setActive("define")} className="flex items-center justify-between gap-3 rounded-lg border border-[#eeeeee] bg-[#fafafa] px-3 py-3 text-left transition hover:bg-white">
               <span className="type-card-title text-[#333]">{item.label}</span>
