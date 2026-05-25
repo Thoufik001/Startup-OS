@@ -536,7 +536,7 @@ function DashboardV2({ setActive }) {
               <div key={metric.label} className="flex min-h-[132px] flex-col justify-between rounded-lg bg-[#f7f7f7] p-4">
                 <div className="type-label text-[#999]">{metric.label}</div>
                 <div>
-                  <div className="text-[32px] font-semibold leading-none tracking-[-0.05em] text-[#262626]">{metric.value}</div>
+                  <div className="h1 text-[#262626]">{metric.value}</div>
                   <div className="type-caption mt-2 text-[#777]">{metric.detail}</div>
                 </div>
               </div>
@@ -563,10 +563,10 @@ function DashboardV2({ setActive }) {
             This improves trust for sales and landing page assets, while still letting you ship a useful content artifact today.
           </p>
           <div className="mt-5 flex flex-wrap gap-2">
-            <button onClick={() => setActive("define")} className="h-9 rounded-lg border border-[#dedede] bg-white px-3 text-sm font-medium text-[#444] transition hover:bg-[#f7f7f7]">
+            <button onClick={() => setActive("define")} className="label h-9 rounded-lg border border-[#dedede] bg-white px-3 text-[#444] transition hover:bg-[#f7f7f7]">
               Add proof
             </button>
-            <button onClick={() => setActive("build")} className="h-9 rounded-lg bg-[var(--brand-accent)] px-3 text-sm font-medium text-white transition hover:bg-[var(--brand-accent-hover)]">
+            <button onClick={() => setActive("build")} className="label h-9 rounded-lg bg-[var(--brand-accent)] px-3 text-white transition hover:bg-[var(--brand-accent-hover)]">
               Build post
             </button>
           </div>
@@ -594,7 +594,7 @@ function DashboardV2({ setActive }) {
           {recommendations.map((item, index) => (
             <button key={item.title} onClick={() => setActive(item.view)} className="rounded-lg border border-[#eeeeee] bg-[#fafafa] p-3 text-left transition hover:bg-white">
               <div className="flex items-center gap-2">
-                <span className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-xs font-semibold ${index === 0 ? "bg-[var(--brand-accent)] text-white" : "bg-[#f1f1f1] text-[#666]"}`}>
+                <span className={`micro flex h-6 w-6 shrink-0 items-center justify-center rounded-md ${index === 0 ? "bg-[var(--brand-accent)] text-white" : "bg-[#f1f1f1] text-[#666]"}`}>
                   {index + 1}
                 </span>
                 <span className="type-card-title truncate text-[#333]">{item.title}</span>
@@ -725,7 +725,7 @@ function DefineView({ createRequest }) {
                 ))}
               </div>
               <div className="shrink-0 text-right">
-                <div className="text-[24px] font-semibold leading-none tracking-[-0.04em] text-[#333]">57%</div>
+                <div className="h3 text-[#333]">57%</div>
               </div>
             </div>
           </div>
@@ -764,14 +764,14 @@ function DefineView({ createRequest }) {
 
       <section className={`${mobileDetailOpen ? "block" : "hidden lg:block"} overflow-y-auto bg-white px-4 py-5 sm:px-8 lg:px-10 lg:py-8`}>
         <div className="mb-6 flex items-center justify-between gap-3">
-          <button onClick={() => setMobileDetailOpen(false)} className="flex h-9 items-center gap-2 rounded-lg border border-[#e7e7e7] bg-white px-3 text-sm text-[#555] hover:bg-[#f8f8f8] lg:hidden">
+          <button onClick={() => setMobileDetailOpen(false)} className="label flex h-9 items-center gap-2 rounded-lg border border-[#e7e7e7] bg-white px-3 text-[#555] hover:bg-[#f8f8f8] lg:hidden">
             <ArrowRight size={15} className="rotate-180" /> Sources
           </button>
           <div className="ml-auto flex items-center gap-2">
-            <button onClick={() => setEditing((value) => !value)} className="h-9 rounded-lg border border-[#e7e7e7] bg-white px-3 text-sm font-medium text-[#555] hover:bg-[#f8f8f8]">
+            <button onClick={() => setEditing((value) => !value)} className="label h-9 rounded-lg border border-[#e7e7e7] bg-white px-3 text-[#555] hover:bg-[#f8f8f8]">
               {editing ? "Done" : "Edit"}
             </button>
-            <button onClick={deletePage} className="flex h-9 items-center gap-2 rounded-lg border border-[#e7e7e7] bg-white px-3 text-sm font-medium text-[#b42318] hover:bg-[#fff7f5]"><Trash2 size={15} /> Delete</button>
+            <button onClick={deletePage} className="label flex h-9 items-center gap-2 rounded-lg border border-[#e7e7e7] bg-white px-3 text-[#b42318] hover:bg-[#fff7f5]"><Trash2 size={15} /> Delete</button>
           </div>
         </div>
 
@@ -781,9 +781,9 @@ function DefineView({ createRequest }) {
             <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-[#f1f1f1] text-[#333]"><SelectedIcon size={22} /></div>
             <div>
               {editing ? (
-                <input value={selected.title} onChange={(event) => updateSelected({ title: event.target.value })} className="w-full rounded-lg border border-[#dddddd] px-3 py-2 text-[22px] font-semibold text-[#333] outline-none focus:border-[#aaa]" />
+                <input value={selected.title} onChange={(event) => updateSelected({ title: event.target.value })} className="h3 w-full rounded-lg border border-[#dddddd] px-3 py-2 text-[#333] outline-none focus:border-[#aaa]" />
               ) : (
-                <div className="flex items-center gap-2 text-[24px] font-semibold tracking-[-0.03em] text-[#333]">{selected.title} <BadgeCheck size={18} className="text-[var(--verified-blue)]" /></div>
+                <div className="h3 flex items-center gap-2 text-[#333]">{selected.title} <BadgeCheck size={18} className="text-[var(--verified-blue)]" /></div>
               )}
               <div className="type-body mt-1 text-[#8a8a8a]">Section: {selected.section}</div>
             </div>
@@ -808,16 +808,16 @@ function DefineView({ createRequest }) {
                 <div className="type-body text-[#777]">Notion-like pages for synopsis forms, notes, uploaded docs, and visual references.</div>
               </div>
               <div className="flex flex-wrap gap-2">
-                <button onClick={() => attachSource("Manual")} className="flex h-8 items-center gap-2 rounded-lg bg-[var(--brand-accent)] px-3 text-sm font-medium text-white hover:bg-[var(--brand-accent-hover)]">
+                <button onClick={() => attachSource("Manual")} className="label flex h-8 items-center gap-2 rounded-lg bg-[var(--brand-accent)] px-3 text-white hover:bg-[var(--brand-accent-hover)]">
                   <Plus size={15} /> Create Page
                 </button>
-                <button onClick={() => attachSource("Doc")} className="flex h-8 items-center gap-2 rounded-lg border border-[#dedede] px-3 text-sm text-[#555] hover:bg-[#f7f7f7]">
+                <button onClick={() => attachSource("Doc")} className="label flex h-8 items-center gap-2 rounded-lg border border-[#dedede] px-3 text-[#555] hover:bg-[#f7f7f7]">
                   <FileText size={15} /> Upload Doc
                 </button>
-                <button onClick={() => attachSource("Image")} className="flex h-8 items-center gap-2 rounded-lg border border-[#dedede] px-3 text-sm text-[#555] hover:bg-[#f7f7f7]">
+                <button onClick={() => attachSource("Image")} className="label flex h-8 items-center gap-2 rounded-lg border border-[#dedede] px-3 text-[#555] hover:bg-[#f7f7f7]">
                   <Layers3 size={15} /> Add Image
                 </button>
-                <button onClick={() => attachSource("Note")} className="flex h-8 items-center gap-2 rounded-lg border border-[#dedede] px-3 text-sm text-[#555] hover:bg-[#f7f7f7]">
+                <button onClick={() => attachSource("Note")} className="label flex h-8 items-center gap-2 rounded-lg border border-[#dedede] px-3 text-[#555] hover:bg-[#f7f7f7]">
                   <MessageSquareText size={15} /> Paste Text
                 </button>
               </div>
@@ -829,7 +829,7 @@ function DefineView({ createRequest }) {
                     const { Icon, color } = sourceIcon(file.type);
                     return <Icon size={25} strokeWidth={1.8} className="shrink-0" style={{ color }} />;
                   })()}
-                  <span className="inline max-w-full truncate border-b border-[#d9d9d9] text-[18px] font-semibold leading-7 text-[#333] group-hover:border-[#999]">{file.label}</span>
+                  <span className="h4 inline max-w-full truncate border-b border-[#d9d9d9] text-[#333] group-hover:border-[#999]">{file.label}</span>
                 </button>
               ))}
             </div>
@@ -848,9 +848,9 @@ function DefineView({ createRequest }) {
                   <div className="type-card-title truncate text-[#333]">{selectedSource.label}</div>
                 </div>
               </div>
-              <button onClick={() => setSelectedSourceIndex(null)} className="rounded-lg px-2 py-1 text-sm text-[#777] hover:bg-[#eeeeee]">Close</button>
+              <button onClick={() => setSelectedSourceIndex(null)} className="label rounded-lg px-2 py-1 text-[#777] hover:bg-[#eeeeee]">Close</button>
             </div>
-            <input value={selectedSource.label} onChange={(event) => updateSource({ label: event.target.value })} className="w-full rounded-lg border border-[#dddddd] bg-white px-3 py-2 text-[18px] font-semibold text-[#333] outline-none focus:border-[#aaa]" />
+            <input value={selectedSource.label} onChange={(event) => updateSource({ label: event.target.value })} className="h4 w-full rounded-lg border border-[#dddddd] bg-white px-3 py-2 text-[#333] outline-none focus:border-[#aaa]" />
             <textarea value={sourcePreview(selectedSource)} onChange={(event) => updateSource({ content: event.target.value })} rows={9} className="type-body mt-3 w-full resize-none rounded-lg border border-[#dddddd] bg-white px-3 py-3 text-[#555] outline-none focus:border-[#aaa]" />
           </aside>
         )}
