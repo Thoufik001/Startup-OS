@@ -1770,7 +1770,10 @@ function WorkspaceTopbar({ active, setActive }) {
         <div className="flex w-[340px] items-center gap-2 rounded-lg border border-[#e8e8e8] bg-white px-3 py-2 text-sm text-[#9a9a9a] shadow-[0_1px_2px_rgba(0,0,0,0.03)]">
           <Search size={15} />
           Search workspace
-          <span className="ml-auto text-xs">Cmd K</span>
+          <span className="micro ml-auto inline-flex items-center gap-1 text-[#999]">
+            <Command size={12} strokeWidth={2} />
+            K
+          </span>
         </div>
         <div className="relative">
           <button
