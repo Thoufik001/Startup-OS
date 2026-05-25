@@ -477,8 +477,8 @@ function DashboardV2({ setActive }) {
   return (
     <div className="mx-auto min-h-full max-w-[1120px] px-4 py-5 pb-24 sm:px-6 lg:py-7">
       <section className="rounded-lg border border-[#e6e6e6] bg-white p-5 sm:p-6">
-        <div>
-          <div>
+        <div className="grid gap-4 lg:grid-cols-[minmax(0,3fr)_minmax(150px,1fr)_minmax(150px,1fr)] lg:items-stretch">
+          <div className="lg:pr-8">
             <div className="type-label text-[#999]">Context health</div>
             <h1 className="type-page-title mt-2 max-w-[720px] text-[#262626]">
               {companyProfile.name} context is 68% ready for GTM output.
@@ -487,17 +487,15 @@ function DashboardV2({ setActive }) {
               Positioning and ICP are strong. Proof and design references need work before generating stronger sales and landing page assets.
             </p>
           </div>
-          <div className="mt-5 grid gap-3 sm:grid-cols-2">
-            {keyMetrics.map((metric) => (
-              <div key={metric.label} className="flex aspect-[1.65/1] min-h-[138px] flex-col justify-between rounded-lg bg-[#f7f7f7] p-4 sm:aspect-square sm:min-h-0">
+          {keyMetrics.map((metric) => (
+              <div key={metric.label} className="flex min-h-[132px] flex-col justify-between rounded-lg bg-[#f7f7f7] p-4">
                 <div className="type-label text-[#999]">{metric.label}</div>
                 <div>
-                  <div className="text-[36px] font-semibold leading-none tracking-[-0.05em] text-[#262626]">{metric.value}</div>
+                  <div className="text-[32px] font-semibold leading-none tracking-[-0.05em] text-[#262626]">{metric.value}</div>
                   <div className="type-caption mt-2 text-[#777]">{metric.detail}</div>
                 </div>
               </div>
-            ))}
-          </div>
+          ))}
         </div>
 
         <div className="mt-5 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
