@@ -448,122 +448,104 @@ function Dashboard({ setActive }) {
 
 function DashboardV2({ setActive }) {
   const healthItems = [
-    { label: "Positioning", status: "Ready", tone: "strong" },
-    { label: "ICP", status: "Ready", tone: "strong" },
-    { label: "Proof", status: "Needs evidence", tone: "weak" },
-    { label: "Competitors", status: "Draft", tone: "draft" },
+    ["Positioning", "Ready"],
+    ["ICP", "Ready"],
+    ["Proof", "Needs evidence"],
+    ["Competitors", "Draft"],
   ];
   const recentArtifacts = [
-    ["Founder LinkedIn post", "12 min ago"],
-    ["Landing page hero", "1h ago"],
-    ["Cold email sequence", "3h ago"],
-    ["Competitor battlecard", "Yesterday"],
+    "Founder LinkedIn post",
+    "Landing page hero",
+    "Cold email sequence",
   ];
   const recommendations = [
-    { title: "Capture proof", detail: "Add 3 customer wins or screenshots.", view: "define" },
-    { title: "Build a founder post", detail: "Ready with Positioning + ICP context.", view: "build" },
-    { title: "Add design references", detail: "Needed before visual artifacts.", view: "define" },
+    { title: "Capture proof", view: "define" },
+    { title: "Build founder post", view: "build" },
+    { title: "Add design references", view: "define" },
   ];
   const missingContext = [
     "No customer proof added",
     "No design references added",
-    "Competitor notes are still draft",
+    "Competitor notes are draft",
   ];
 
   return (
-    <div className="mx-auto min-h-full max-w-[1120px] px-4 py-5 pb-24 sm:px-6 lg:py-7">
-      <section className="rounded-lg border border-[#e6e6e6] bg-white p-5 sm:p-6">
-        <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_280px] lg:items-start">
+    <div className="mx-auto min-h-full max-w-[980px] px-4 py-5 pb-24 sm:px-6 lg:py-8">
+      <section className="rounded-lg border border-[#e5e5e5] bg-white p-5 sm:p-7">
+        <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <div className="type-label text-[#999]">Context health</div>
-            <h1 className="type-page-title mt-2 max-w-[720px] text-[#262626]">
+            <div className="type-label text-[#999]">Context Health</div>
+            <h1 className="type-page-title mt-2 max-w-[680px] text-[#262626]">
               {companyProfile.name} context is 68% ready for GTM output.
             </h1>
-            <p className="type-body mt-3 max-w-[680px] text-[#666]">
-              Positioning and ICP are strong. Proof and design references need work before generating stronger sales and landing page assets.
-            </p>
           </div>
-          <div className="rounded-lg bg-[#f7f7f7] p-4">
-            <div className="text-[44px] font-semibold leading-none tracking-[-0.06em] text-[#262626]">68%</div>
-            <div className="type-caption mt-2 text-[#777]">Basic content ready</div>
-            <div className="mt-4 h-2 rounded-full bg-[#e6e6e6]">
-              <div className="h-2 rounded-full bg-[var(--brand-accent)]" style={{ width: "68%" }} />
-            </div>
+          <div className="shrink-0 rounded-lg bg-[#f5f5f5] px-4 py-3">
+            <div className="text-[34px] font-semibold leading-none tracking-[-0.04em] text-[#262626]">68%</div>
+            <div className="type-caption mt-1 text-[#777]">GTM ready</div>
           </div>
         </div>
 
-        <div className="mt-6 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
-          {healthItems.map((item) => (
-            <button key={item.label} onClick={() => setActive("define")} className="flex items-center justify-between gap-3 rounded-lg border border-[#eeeeee] bg-[#fafafa] px-3 py-3 text-left transition hover:bg-white">
-              <span className="type-card-title text-[#333]">{item.label}</span>
-              <span className={`type-caption rounded-md px-2 py-1 ${item.tone === "strong" ? "border border-[var(--approved-border)] bg-[var(--approved-bg)] text-[var(--approved-text)]" : "bg-[#f1f1f1] text-[#777]"}`}>
-                {item.status}
+        <div className="mt-6 divide-y divide-[#eeeeee] rounded-lg border border-[#eeeeee]">
+          {healthItems.map(([label, status]) => (
+            <button key={label} onClick={() => setActive("define")} className="flex w-full items-center justify-between gap-4 px-4 py-3 text-left transition hover:bg-[#fafafa]">
+              <span className="type-card-title text-[#333]">{label}</span>
+              <span className={`type-body ${status === "Ready" ? "text-[var(--approved-text)]" : "text-[#777]"}`}>
+                {status}
               </span>
             </button>
           ))}
         </div>
       </section>
 
-      <section className="mt-4 grid gap-4 lg:grid-cols-[minmax(0,1fr)_360px]">
-        <div className="rounded-lg border border-[#e6e6e6] bg-white p-5 sm:p-6">
-          <div className="type-label text-[#999]">Next best move</div>
-          <h2 className="type-section-title mt-2 text-[#303030]">Add 3 proof points, then build a founder LinkedIn post.</h2>
-          <p className="type-body mt-2 max-w-[620px] text-[#666]">
-            This improves trust for sales and landing page assets, while still letting you ship a useful content artifact today.
-          </p>
-          <div className="mt-5 flex flex-wrap gap-2">
-            <button onClick={() => setActive("define")} className="h-9 rounded-lg border border-[#dedede] bg-white px-3 text-sm font-medium text-[#444] transition hover:bg-[#f7f7f7]">
-              Add proof
-            </button>
-            <button onClick={() => setActive("build")} className="h-9 rounded-lg bg-[var(--brand-accent)] px-3 text-sm font-medium text-white transition hover:bg-[var(--brand-accent-hover)]">
-              Build post
-            </button>
-          </div>
+      <section className="mt-4 rounded-lg border border-[#e5e5e5] bg-white p-5 sm:p-6">
+        <div className="type-label text-[#999]">Next Best Move</div>
+        <h2 className="type-section-title mt-2 text-[#303030]">Add 3 proof points, then build a founder LinkedIn post.</h2>
+        <div className="mt-5 flex flex-wrap gap-2">
+          <button onClick={() => setActive("define")} className="h-9 rounded-lg border border-[#dedede] bg-white px-3 text-sm font-medium text-[#444] transition hover:bg-[#f7f7f7]">
+            Add proof
+          </button>
+          <button onClick={() => setActive("build")} className="h-9 rounded-lg bg-[var(--brand-accent)] px-3 text-sm font-medium text-white transition hover:bg-[var(--brand-accent-hover)]">
+            Build post
+          </button>
         </div>
+      </section>
 
-        <div className="rounded-lg border border-[#e6e6e6] bg-white p-5">
-          <h2 className="type-section-title text-[#303030]">Missing context</h2>
+      <div className="mt-4 grid gap-4 lg:grid-cols-2">
+        <section className="rounded-lg border border-[#e5e5e5] bg-white p-5 sm:p-6">
+          <h2 className="type-section-title text-[#303030]">Missing Context</h2>
           <div className="mt-4 space-y-3">
             {missingContext.map((item) => (
               <button key={item} onClick={() => setActive("define")} className="flex w-full items-center gap-3 text-left">
-                <span className="h-2 w-2 shrink-0 rounded-full bg-[#aaa]" />
+                <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#aaa]" />
                 <span className="type-body text-[#555]">{item}</span>
               </button>
             ))}
           </div>
-        </div>
-      </section>
+        </section>
 
-      <section className="mt-4 rounded-lg border border-[#e6e6e6] bg-white p-5">
-        <div className="mb-4 flex items-center justify-between gap-4">
-          <h2 className="type-section-title text-[#303030]">Recommendations</h2>
-          <button onClick={() => setActive("build")} className="type-body font-medium text-[#555] underline decoration-[#d7d7d7] underline-offset-4 hover:text-[#222]">Open Build</button>
-        </div>
-        <div className="grid gap-3 md:grid-cols-3">
+        <section className="rounded-lg border border-[#e5e5e5] bg-white p-5 sm:p-6">
+          <h2 className="type-section-title text-[#303030]">Suggested Actions</h2>
+          <div className="mt-4 space-y-2">
           {recommendations.map((item, index) => (
-            <button key={item.title} onClick={() => setActive(item.view)} className="rounded-lg border border-[#eeeeee] bg-[#fafafa] p-3 text-left transition hover:bg-white">
-              <div className="flex items-center gap-2">
-                <span className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-xs font-semibold ${index === 0 ? "bg-[var(--brand-accent)] text-white" : "bg-[#f1f1f1] text-[#666]"}`}>
-                  {index + 1}
-                </span>
-                <span className="type-card-title truncate text-[#333]">{item.title}</span>
-              </div>
-              <p className="type-caption mt-2 text-[#777]">{item.detail}</p>
+            <button key={item.title} onClick={() => setActive(item.view)} className="flex w-full items-center justify-between gap-4 rounded-lg px-3 py-2 text-left transition hover:bg-[#f7f7f7]">
+              <span className="type-body text-[#333]">{item.title}</span>
+              <span className="type-caption text-[#999]">{index + 1}</span>
             </button>
           ))}
-        </div>
-      </section>
+          </div>
+        </section>
+      </div>
 
-      <section className="mt-4 rounded-lg border border-[#e6e6e6] bg-white p-5">
+      <section className="mt-4 rounded-lg border border-[#e5e5e5] bg-white p-5 sm:p-6">
         <div className="mb-3 flex items-center justify-between gap-4">
-          <h2 className="type-section-title text-[#303030]">Recent artifacts</h2>
+          <h2 className="type-section-title text-[#303030]">Recent Artifacts</h2>
           <button onClick={() => setActive("build")} className="type-body font-medium text-[#555] underline decoration-[#d7d7d7] underline-offset-4 hover:text-[#222]">Open Build</button>
         </div>
         <div className="divide-y divide-[#eeeeee]">
-          {recentArtifacts.map(([title, time]) => (
-            <button key={title} onClick={() => setActive("build")} className="grid w-full grid-cols-[minmax(0,1fr)_90px] gap-4 py-3 text-left transition hover:bg-[#fafafa]">
+          {recentArtifacts.map((title) => (
+            <button key={title} onClick={() => setActive("build")} className="flex w-full items-center justify-between gap-4 py-3 text-left transition hover:bg-[#fafafa]">
               <span className="type-card-title truncate text-[#333]">{title}</span>
-              <span className="type-body text-right text-[#999]">{time}</span>
+              <ChevronRight size={16} className="shrink-0 text-[#aaa]" />
             </button>
           ))}
         </div>
