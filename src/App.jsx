@@ -2355,9 +2355,9 @@ function LandingPage({ onGetStarted }) {
     ["03", "Trust the output", "Review citations, context trace, and version history before the team ships."],
   ];
   const stats = [
-    ["6.4h", "saved per weekly asset cycle"],
-    ["42%", "less context rework before publishing"],
-    ["1", "brand memory for the team"],
+    ["1", "shared source of truth for GTM"],
+    ["0", "cold starts for new campaigns"],
+    ["100%", "source-traceable AI outputs"],
   ];
   const useCases = {
     content: {
@@ -2666,9 +2666,9 @@ function LandingPage({ onGetStarted }) {
 
 function LandingPageV2({ onGetStarted }) {
   const outcomes = [
-    ["6.4h", "saved per GTM asset cycle"],
-    ["42%", "less context rework"],
-    ["7", "core source blocks"],
+    ["1", "shared source of truth for GTM"],
+    ["0", "cold starts for new campaigns"],
+    ["100%", "source-traceable AI outputs"],
   ];
   const workflow = [
     { icon: BookOpen, title: "Define the source of truth", text: "Store positioning, ICP, proof, competitor notes, tone, and design references as source pages." },
@@ -2676,10 +2676,10 @@ function LandingPageV2({ onGetStarted }) {
     { icon: Clock3, title: "Show the work", text: "Use citations, source trace, and version history so teams can trust what AI produced." },
   ];
   const useCases = [
-    ["Founder content", "Turn positioning and proof into consistent founder posts."],
-    ["Landing pages", "Draft hero sections and claims from approved value props."],
-    ["Sales assets", "Create battlecards and email sequences without risky copy."],
-    ["Visual prompts", "Use design references to guide image and carousel prompts."],
+    { icon: MessageSquareText, title: "Founder content", text: "Turn positioning and proof into consistent founder posts." },
+    { icon: FileText, title: "Landing pages", text: "Draft hero sections and claims from approved value props." },
+    { icon: Briefcase, title: "Sales assets", text: "Create battlecards and email sequences without risky copy." },
+    { icon: Wand2, title: "Visual prompts", text: "Use design references to guide image and carousel prompts." },
   ];
 
   return (
@@ -2708,7 +2708,7 @@ function LandingPageV2({ onGetStarted }) {
             Brand memory for startup teams
           </div>
           <h1 className="landing-reveal display mx-auto mt-5 max-w-[820px] text-[#202020]" style={{ "--delay": "80ms" }}>
-            One place to define your startup context before AI builds from it.
+            Stop rebuilding GTM context. Build every asset from one trusted brand memory.
           </h1>
           <p className="landing-reveal body-lg mx-auto mt-4 max-w-[680px] text-[#666]" style={{ "--delay": "140ms" }}>
             ContextOS helps founders, PMs, and GTM teams keep positioning, proof, customer notes, and design references ready for consistent content, sales, and launch assets.
@@ -2808,14 +2808,21 @@ function LandingPageV2({ onGetStarted }) {
         <section id="outcomes" className="border-y border-[#eeeeee] bg-[linear-gradient(#f3f3f3_1px,transparent_1px),linear-gradient(90deg,#f3f3f3_1px,transparent_1px)] bg-[size:64px_64px]">
           <div className="mx-auto max-w-[1040px] px-4 py-20 sm:px-6 lg:px-8 lg:py-24">
             <div className="mx-auto max-w-[560px] text-center">
-              <h2 className="h2 text-[#242424]">Built for the first GTM operating system inside a startup.</h2>
-              <p className="type-body mt-3 text-[#666]">The useful part is not another chat box. It is the memory layer your team can improve, inspect, and trust.</p>
+              <h2 className="h2 text-[#242424]">Make every GTM asset start from the same truth.</h2>
+              <p className="type-body mt-3 text-[#666]">Founders, marketers, and sales teams can finally use AI without re-explaining the company every time.</p>
             </div>
             <div className="mt-10 grid gap-3 md:grid-cols-2">
-              {useCases.map(([title, text]) => (
-                <div key={title} className="rounded-lg border border-[#e6e6e6] bg-white p-5">
-                  <h3 className="h4 text-[#303030]">{title}</h3>
-                  <p className="type-body mt-2 text-[#666]">{text}</p>
+              {useCases.map(({ icon: Icon, title, text }) => (
+                <div key={title} className="group rounded-lg border border-[#e6e6e6] bg-white p-5 transition duration-200 hover:-translate-y-0.5 hover:border-[#d8d8d8] hover:shadow-[0_16px_36px_rgba(0,0,0,0.06)]">
+                  <div className="flex items-start gap-4">
+                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#f4f4f4] text-[#555] transition group-hover:bg-[#eeeeee] group-hover:text-[#303030]">
+                      <Icon size={18} strokeWidth={1.8} />
+                    </div>
+                    <div>
+                      <h3 className="h4 text-[#303030]">{title}</h3>
+                      <p className="type-body mt-2 text-[#666]">{text}</p>
+                    </div>
+                  </div>
                 </div>
               ))}
             </div>
