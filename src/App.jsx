@@ -1614,12 +1614,12 @@ function MobileBottomNav({ active, setActive }) {
             <button
               key={item.id}
               onClick={() => setActive(item.id)}
-              className={`relative z-10 flex h-11 min-w-0 items-center justify-center gap-1.5 rounded-xl px-2 text-[12px] font-medium transition-colors duration-200 ${
+              className={`relative z-10 flex h-11 min-w-0 items-center justify-center gap-1 rounded-xl px-1 text-[11px] font-medium transition-colors duration-200 min-[390px]:gap-1.5 min-[390px]:px-2 min-[390px]:text-[12px] ${
                 selected ? "text-white" : "text-[#707070] hover:text-[var(--brand-accent)]"
               }`}
             >
-              <Icon size={17} strokeWidth={1.9} className="transition-transform duration-[250ms] ease-in-out" />
-              <span className="truncate">{item.label}</span>
+              <Icon size={16} strokeWidth={1.9} className="shrink-0 transition-transform duration-[250ms] ease-in-out min-[390px]:h-[17px] min-[390px]:w-[17px]" />
+              <span className="min-w-0 whitespace-nowrap">{item.label}</span>
             </button>
           );
         })}
