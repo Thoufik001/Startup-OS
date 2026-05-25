@@ -749,9 +749,18 @@ function DefineView() {
                 <div className="type-body text-[#777]">Notion-like pages for synopsis forms, notes, uploaded docs, and visual references.</div>
               </div>
               <div className="flex flex-wrap gap-2">
-                <button onClick={() => attachSource("Note")} className="h-8 rounded-lg border border-[#dedede] px-3 text-sm text-[#555] hover:bg-[#f7f7f7]">Paste note</button>
-                <button onClick={() => attachSource("Doc")} className="h-8 rounded-lg border border-[#dedede] px-3 text-sm text-[#555] hover:bg-[#f7f7f7]">Upload doc</button>
-                <button onClick={() => attachSource("Image")} className="h-8 rounded-lg border border-[#dedede] px-3 text-sm text-[#555] hover:bg-[#f7f7f7]">Add image</button>
+                <button onClick={() => attachSource("Manual")} className="flex h-8 items-center gap-2 rounded-lg bg-[var(--brand-accent)] px-3 text-sm font-medium text-white hover:bg-[var(--brand-accent-hover)]">
+                  <Plus size={15} /> Create Page
+                </button>
+                <button onClick={() => attachSource("Doc")} className="flex h-8 items-center gap-2 rounded-lg border border-[#dedede] px-3 text-sm text-[#555] hover:bg-[#f7f7f7]">
+                  <FileText size={15} /> Upload Doc
+                </button>
+                <button onClick={() => attachSource("Image")} className="flex h-8 items-center gap-2 rounded-lg border border-[#dedede] px-3 text-sm text-[#555] hover:bg-[#f7f7f7]">
+                  <Layers3 size={15} /> Add Image
+                </button>
+                <button onClick={() => attachSource("Note")} className="flex h-8 items-center gap-2 rounded-lg border border-[#dedede] px-3 text-sm text-[#555] hover:bg-[#f7f7f7]">
+                  <MessageSquareText size={15} /> Paste Text
+                </button>
               </div>
             </div>
             <div className="overflow-hidden rounded-lg border border-[#e8e8e8] bg-white">
