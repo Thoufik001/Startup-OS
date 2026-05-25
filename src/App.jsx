@@ -271,14 +271,14 @@ function LeftSidebar({ active, setActive, collapsed, setCollapsed, sidebarWidth,
         <div
           onMouseDown={startResize}
           title="Resize sidebar"
-          className="group absolute right-[-4px] top-0 z-20 h-full w-2 cursor-col-resize"
+          className="group absolute -right-1 top-0 z-20 h-full w-2 cursor-col-resize"
         >
           <div className="mx-auto h-full w-px bg-transparent transition group-hover:bg-[#d0d0d0]" />
         </div>
       )}
 
       <div className="flex h-full shrink-0 flex-col" style={{ width: sidebarWidth }}>
-        <div className="flex h-[73px] items-center gap-3 border-b border-[#f0f0f0] px-5 py-4">
+        <div className="flex h-16 items-center gap-3 border-b border-[#f0f0f0] px-5 py-4">
           <button
             onClick={() => collapsed ? setCollapsed(false) : setActive("dashboard")}
             title={collapsed ? "Expand sidebar" : "Brand Dashboard"}
@@ -310,7 +310,7 @@ function LeftSidebar({ active, setActive, collapsed, setCollapsed, sidebarWidth,
                 key={id}
                 onClick={() => setActive(id)}
                 title={label}
-                className={`relative flex w-full items-center gap-3 rounded-lg px-2 py-2.5 text-left text-sm transition-colors duration-200 ease-in-out ${
+                className={`relative flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-sm transition-colors duration-200 ease-in-out ${
                   active === id && !collapsed ? "bg-[#f3f3f3] text-[#262626]" : "text-[#666] hover:bg-[#f7f7f7]"
                 }`}
               >
@@ -340,7 +340,7 @@ function LeftSidebar({ active, setActive, collapsed, setCollapsed, sidebarWidth,
                   <span className="flex items-center gap-2">
                     <contextAction.Icon size={15} /> {contextAction.label}
                   </span>
-                  <span className="rounded-md bg-white/12 px-1.5 py-0.5 text-[11px] font-medium text-white/72">Cmd N</span>
+                  <span className="rounded-md bg-white/12 px-2 py-1 text-[11px] font-medium text-white/72">Cmd N</span>
                 </button>
               )}
               <button
@@ -391,7 +391,7 @@ function LeftSidebar({ active, setActive, collapsed, setCollapsed, sidebarWidth,
           </div>
 
           {!collapsed && profileMenuOpen && (
-            <div className="absolute bottom-[76px] left-5 right-5 z-30 overflow-hidden rounded-lg border border-[#e6e6e6] bg-white py-1 shadow-[0_8px_24px_rgba(0,0,0,0.08)]">
+            <div className="absolute bottom-20 left-5 right-5 z-30 overflow-hidden rounded-lg border border-[#e6e6e6] bg-white py-1 shadow-[0_8px_24px_rgba(0,0,0,0.08)]">
               <div className="py-1">
                 {profileMenuItems.map((item) => (
                   <button
@@ -415,12 +415,12 @@ function LeftSidebar({ active, setActive, collapsed, setCollapsed, sidebarWidth,
 
 function Topbar() {
   return (
-    <header className="flex h-[64px] items-center justify-between border-b border-[#ececec] bg-white px-5">
+    <header className="flex h-16 items-center justify-between border-b border-[#ececec] bg-white px-5">
       <div className="flex items-center gap-2 text-sm text-[#777]">
-        <button className="rounded-lg bg-[#f4f4f4] px-3 py-1.5 text-[#333]">Context Health</button>
-        <button className="rounded-lg px-3 py-1.5 hover:bg-[#f7f7f7]">Sources</button>
-        <button className="rounded-lg px-3 py-1.5 hover:bg-[#f7f7f7]">Artifacts</button>
-        <button className="rounded-lg px-3 py-1.5 hover:bg-[#f7f7f7]">GTM Library</button>
+        <button className="rounded-lg bg-[#f4f4f4] px-3 py-2 text-[#333]">Context Health</button>
+        <button className="rounded-lg px-3 py-2 hover:bg-[#f7f7f7]">Sources</button>
+        <button className="rounded-lg px-3 py-2 hover:bg-[#f7f7f7]">Artifacts</button>
+        <button className="rounded-lg px-3 py-2 hover:bg-[#f7f7f7]">GTM Library</button>
       </div>
       <div className="hidden w-[320px] items-center gap-2 rounded-lg border border-[#e8e8e8] bg-white px-3 py-2 text-sm text-[#9a9a9a] shadow-[0_1px_2px_rgba(0,0,0,0.03)] md:flex">
         <Search size={15} />
@@ -428,8 +428,8 @@ function Topbar() {
         <span className="ml-auto text-xs">⌘K</span>
       </div>
       <div className="flex items-center gap-2 text-sm text-[#777]">
-        <button className="rounded-lg px-2 py-1.5 hover:bg-[#f7f7f7]">Profile</button>
-        <div className="h-7 w-7 rounded-lg bg-gradient-to-br from-[#b9a7ff] to-[#f5f2ff] ring-1 ring-[#ececec]" />
+        <button className="rounded-lg px-2 py-2 hover:bg-[#f7f7f7]">Profile</button>
+        <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-[#b9a7ff] to-[#f5f2ff] ring-1 ring-[#ececec]" />
       </div>
     </header>
   );
@@ -446,7 +446,7 @@ function Dashboard({ setActive }) {
         <p className="mt-4 max-w-[620px] text-[15px] leading-7 text-[#666]">
           Define your positioning, ICP, proof, competitors, tone, and GTM notes once. Then build consistent marketing and sales artifacts from approved sources.
         </p>
-        <div className="mt-7 flex max-w-[620px] items-center rounded-lg bg-[#f4f4f4] px-4 py-3 font-mono text-sm text-[#555]">
+        <div className="mt-8 flex max-w-[620px] items-center rounded-lg bg-[#f4f4f4] px-4 py-3 font-mono text-sm text-[#555]">
           define company truth → build GTM artifacts
           <button className="ml-auto text-[#777]">⧉</button>
         </div>
@@ -470,7 +470,7 @@ function Dashboard({ setActive }) {
         <div className="flex flex-col justify-center">
           <h2 className="text-[26px] font-semibold tracking-[-0.04em] text-[#292929]">Define truth. Build output.</h2>
           <p className="mt-4 text-[15px] leading-7 text-[#666]">The product is intentionally simple: maintain approved company context, then generate GTM assets from it.</p>
-          <div className="mt-7 flex gap-3">
+          <div className="mt-8 flex gap-3">
             <button onClick={() => setActive('define')} className="rounded-lg bg-[var(--brand-accent)] px-5 py-3 text-sm font-medium text-white shadow-sm hover:bg-[var(--brand-accent-hover)]">Add Source</button>
             <button onClick={() => setActive('build')} className="rounded-lg border border-[#e6e6e6] bg-white px-5 py-3 text-sm font-medium text-[#444] hover:bg-[#f7f7f7]">Build Artifact</button>
           </div>
@@ -525,7 +525,7 @@ function DashboardV2({ setActive }) {
   ];
 
   return (
-    <div className="mx-auto min-h-full max-w-[1120px] px-4 py-5 pb-24 sm:px-6 lg:py-7">
+    <div className="mx-auto min-h-full max-w-[1120px] px-4 py-5 pb-24 sm:px-6 lg:py-8">
       <section className="rounded-lg border border-[#e6e6e6] bg-white p-5 sm:p-6">
         <div className="grid gap-4 lg:grid-cols-[minmax(0,3fr)_minmax(150px,1fr)_minmax(150px,1fr)] lg:items-stretch">
           <div className="lg:pr-8">
@@ -538,7 +538,7 @@ function DashboardV2({ setActive }) {
             </p>
           </div>
           {keyMetrics.map((metric) => (
-              <div key={metric.label} className="flex min-h-[132px] flex-col justify-between rounded-lg bg-[#f7f7f7] p-4">
+              <div key={metric.label} className="flex min-h-32 flex-col justify-between rounded-lg bg-[#f7f7f7] p-4">
                 <div className="type-label text-[#999]">{metric.label}</div>
                 <div>
                   <div className="h1 text-[#262626]">{metric.value}</div>
@@ -679,7 +679,7 @@ function SourcePageEditor({ source, parentTitle, sourceIcon, fallbackText, updat
   const { Icon, color } = sourceIcon(source.type);
 
   return (
-    <div className="mx-auto max-w-[940px] px-7 py-12 sm:px-12 lg:px-16">
+    <div className="mx-auto max-w-[940px] px-4 py-8 sm:px-6 lg:px-10 lg:py-10">
       <div className="mb-8">
         <Icon size={34} strokeWidth={1.7} style={{ color }} />
       </div>
@@ -689,7 +689,7 @@ function SourcePageEditor({ source, parentTitle, sourceIcon, fallbackText, updat
         className="display w-full border-0 bg-transparent p-0 text-[#2f2f2f] outline-none placeholder:text-[#b5b5b5]"
         placeholder="Untitled"
       />
-      <div className="mt-7 grid max-w-[520px] grid-cols-[120px_minmax(0,1fr)] gap-x-4 gap-y-3 border-b border-[#eeeeee] pb-7">
+      <div className="mt-8 grid max-w-[520px] grid-cols-[120px_minmax(0,1fr)] gap-x-4 gap-y-3 border-b border-[#eeeeee] pb-6">
         <div className="caption text-[#999]">Type</div>
         <select
           value={source.type}
@@ -734,18 +734,18 @@ function SourcePageEditor({ source, parentTitle, sourceIcon, fallbackText, updat
               <div className="absolute -left-16 top-1 hidden items-center gap-1 text-[#a5a5a5] group-hover:flex">
                 <button
                   onClick={() => { setMenuBlockId(block.id); setMenuOpen(true); }}
-                  className="flex h-7 w-7 items-center justify-center rounded-md hover:bg-[#f1f1f1] hover:text-[#555]"
+                  className="flex h-8 w-8 items-center justify-center rounded-md hover:bg-[#f1f1f1] hover:text-[#555]"
                   title="Add block"
                 >
                   <Plus size={18} />
                 </button>
-                <button className="flex h-7 w-7 cursor-grab items-center justify-center rounded-md hover:bg-[#f1f1f1] hover:text-[#555]" title="Drag to move">
+                <button className="flex h-8 w-8 cursor-grab items-center justify-center rounded-md hover:bg-[#f1f1f1] hover:text-[#555]" title="Drag to move">
                   <GripVertical size={17} />
                 </button>
               </div>
-              {block.type === "bullet" && <div className="mt-[11px] h-1.5 w-1.5 shrink-0 rounded-full bg-[#383838]" />}
-              {block.type === "number" && <div className="body-lg w-7 shrink-0 text-[#555]">{index + 1}.</div>}
-              {block.type === "todo" && <input type="checkbox" className="mt-2.5 h-4 w-4 shrink-0 accent-[#383838]" />}
+              {block.type === "bullet" && <div className="mt-3 h-2 w-2 shrink-0 rounded-full bg-[#383838]" />}
+              {block.type === "number" && <div className="body-lg w-8 shrink-0 text-[#555]">{index + 1}.</div>}
+              {block.type === "todo" && <input type="checkbox" className="mt-2 h-4 w-4 shrink-0 accent-[#383838]" />}
               <textarea
                 value={block.text}
                 onFocus={() => setMenuBlockId(block.id)}
@@ -770,7 +770,7 @@ function SourcePageEditor({ source, parentTitle, sourceIcon, fallbackText, updat
                 }}
                 rows={isHeading ? 1 : Math.max(1, Math.ceil((block.text.length || 20) / 80))}
                 placeholder={index === 0 ? "Type '/' for commands" : ""}
-                className={`${textClass} min-h-[34px] flex-1 resize-none overflow-hidden border-0 bg-transparent p-0 text-[#2f2f2f] outline-none placeholder:text-[#aaa]`}
+                className={`${textClass} min-h-8 flex-1 resize-none overflow-hidden border-0 bg-transparent p-0 text-[#2f2f2f] outline-none placeholder:text-[#aaa]`}
               />
               {BlockIcon && <span className="sr-only"><BlockIcon size={16} /></span>}
             </div>
@@ -778,17 +778,17 @@ function SourcePageEditor({ source, parentTitle, sourceIcon, fallbackText, updat
         })}
 
         {menuOpen && (
-          <div className="absolute left-[-14px] top-8 z-20 w-[420px] max-w-[calc(100vw-40px)] overflow-hidden rounded-xl border border-[#e5e5e5] bg-white shadow-[0_18px_50px_rgba(0,0,0,0.14)]">
+          <div className="absolute -left-4 top-8 z-20 w-[420px] max-w-[calc(100vw-40px)] overflow-hidden rounded-lg border border-[#e5e5e5] bg-white shadow-[0_16px_48px_rgba(0,0,0,0.14)]">
             <div className="px-4 py-3">
               <div className="label text-[#777]">Basic blocks</div>
-              <div className="mt-3 max-h-[340px] overflow-y-auto pr-1">
+              <div className="mt-3 max-h-80 overflow-y-auto pr-1">
                 {filteredOptions.map((option, index) => {
                   const OptionIcon = option.icon;
                   return (
                     <button
                       key={option.type}
                       onClick={() => applyBlockType(option.type)}
-                      className={`flex w-full items-center gap-4 rounded-lg px-3 py-2.5 text-left ${index === 0 ? "bg-[#f1f0ef]" : "hover:bg-[#f7f7f7]"}`}
+                      className={`flex w-full items-center gap-4 rounded-lg px-3 py-2 text-left ${index === 0 ? "bg-[#f1f0ef]" : "hover:bg-[#f7f7f7]"}`}
                     >
                       <div className="flex w-8 shrink-0 items-center justify-center text-[#333]">
                         {OptionIcon ? <OptionIcon size={21} strokeWidth={1.8} /> : <span className="h4">{option.mark}</span>}
@@ -913,11 +913,11 @@ function DefineView({ createRequest }) {
               <div className="type-body text-[#777]">4 of 7 context pages are ready for basic GTM output.</div>
             </div>
             <div className="mt-4 flex items-center gap-4">
-              <div className="flex min-w-0 flex-1 items-center gap-[3px] overflow-hidden">
+              <div className="flex min-w-0 flex-1 items-center gap-1 overflow-hidden">
                 {Array.from({ length: 24 }).map((_, index) => (
                   <span
                     key={index}
-                    className="h-7 w-1.5 shrink-0 rounded-full bg-[var(--context-warm)]"
+                    className="h-8 w-1 shrink-0 rounded-full bg-[var(--context-warm)]"
                     style={{ opacity: index < 14 ? 1 : 0.18 }}
                   />
                 ))}
@@ -1022,7 +1022,7 @@ function DefineView({ createRequest }) {
             </div>
             <div className="space-y-2">
               {selected.sources.map((file, i) => (
-                <button key={`${file.label}-${i}`} onClick={() => setSelectedSourceIndex(i)} className="group flex w-full items-center gap-3 rounded-lg px-1 py-1.5 text-left hover:bg-[#f7f7f7]">
+                <button key={`${file.label}-${i}`} onClick={() => setSelectedSourceIndex(i)} className="group flex w-full items-center gap-3 rounded-lg px-1 py-2 text-left hover:bg-[#f7f7f7]">
                   {(() => {
                     const { Icon, color } = sourceIcon(file.type);
                     return <Icon size={25} strokeWidth={1.8} className="shrink-0" style={{ color }} />;
@@ -1038,7 +1038,7 @@ function DefineView({ createRequest }) {
           <aside className="fixed inset-y-0 right-0 z-50 w-full max-w-[1040px] overflow-y-auto border-l border-[#e5e5e5] bg-white shadow-[-18px_0_44px_rgba(0,0,0,0.10)]">
             <div className="sticky top-0 z-10 flex h-12 items-center justify-between border-b border-[#eeeeee] bg-white px-4">
               <div className="flex items-center gap-2 text-[#777]">
-                <button onClick={() => setSelectedSourceIndex(null)} className="rounded-lg p-1.5 hover:bg-[#f5f5f5]" title="Close source page">
+                <button onClick={() => setSelectedSourceIndex(null)} className="rounded-lg p-2 hover:bg-[#f5f5f5]" title="Close source page">
                   <ChevronRight size={18} className="rotate-180" />
                 </button>
               </div>
@@ -1187,7 +1187,7 @@ function BuildView() {
       >
         <button
           onClick={() => setRightRailCollapsed((collapsed) => !collapsed)}
-          className="absolute left-[-14px] top-5 z-20 flex h-7 w-7 items-center justify-center rounded-full border border-[#dedede] bg-white text-[#777] shadow-sm transition hover:text-[#333]"
+          className="absolute -left-4 top-5 z-20 flex h-8 w-8 items-center justify-center rounded-lg border border-[#dedede] bg-white text-[#777] shadow-sm transition hover:text-[#333]"
           title={rightRailCollapsed ? "Expand right rail" : "Collapse right rail"}
         >
           <ChevronRight size={15} className={`transition-transform duration-200 ease-in-out ${rightRailCollapsed ? "rotate-180" : ""}`} />
@@ -1421,7 +1421,7 @@ function BuildStudioView() {
             </div>
           ) : (
             <div className="mx-auto w-full max-w-[760px] space-y-6 py-6">
-              <div className="ml-auto max-w-[680px] rounded-2xl bg-[var(--brand-accent)] px-5 py-4 text-sm leading-6 text-white shadow-sm">
+              <div className="ml-auto max-w-[680px] rounded-lg bg-[var(--brand-accent)] px-5 py-4 text-sm leading-6 text-white shadow-sm">
                 {message}
               </div>
               <div>
@@ -1437,12 +1437,12 @@ function BuildStudioView() {
                 <div className={`grid transition-all duration-300 ease-in-out ${traceOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"}`}>
                   <div className="overflow-hidden">
                     <div className="relative mt-4 space-y-3 pl-1">
-                      <div className="absolute bottom-3 left-[13px] top-3 w-px bg-[#e6e6e6]" />
+                      <div className="absolute bottom-3 left-3 top-3 w-px bg-[#e6e6e6]" />
                       {traceSteps.map((step) => {
                         const Icon = step.icon;
                         return (
                           <div key={step.label} className="relative flex gap-3">
-                            <div className="z-10 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#fafafa] text-[#777] ring-1 ring-[#e6e6e6]">
+                            <div className="z-10 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#fafafa] text-[#777] ring-1 ring-[#e6e6e6]">
                               <Icon size={13} />
                             </div>
                             <div className="min-w-0 flex-1 pb-2">
@@ -1451,7 +1451,7 @@ function BuildStudioView() {
                                 <span className="text-[11px] text-[#999]">{step.type}</span>
                               </div>
                               <p className="mt-1 text-sm leading-6 text-[#777]">{step.detail}</p>
-                              <div className="mt-2 flex flex-wrap gap-1.5">
+                              <div className="mt-2 flex flex-wrap gap-2">
                                 {step.sources.map((source) => (
                                   <span key={source} className="text-[11px] text-[#999]">
                                     {source}
@@ -1466,7 +1466,7 @@ function BuildStudioView() {
                   </div>
                 </div>
               </div>
-              <article className="rounded-xl bg-[#eeeeee] p-5 sm:p-6">
+              <article className="rounded-lg bg-[#eeeeee] p-5 sm:p-6">
                 <div className="mb-4 flex items-start justify-between gap-4">
                   <h1 className="text-[26px] font-semibold tracking-[-0.04em] text-[#292929]">{output.title}</h1>
                   <button
@@ -1480,20 +1480,20 @@ function BuildStudioView() {
                   </button>
                 </div>
                 <div className="whitespace-pre-line text-[16px] leading-8 text-[#555]">{output.body}</div>
-                <div className="mt-5 flex flex-wrap items-center gap-1.5 text-xs text-[#999]">
+                <div className="mt-5 flex flex-wrap items-center gap-2 text-xs text-[#999]">
                   <span>Sources:</span>
                     {output.sources.map((source) => (
                       <button
                         key={source}
                         onClick={() => setSelectedSource(source)}
-                        className="rounded-md px-1.5 py-0.5 text-[#777] underline decoration-[#d8d8d8] underline-offset-2 transition hover:text-[#333]"
+                        className="rounded-md px-2 py-1 text-[#777] underline decoration-[#d8d8d8] underline-offset-2 transition hover:text-[#333]"
                       >
                         {source}
                       </button>
                     ))}
                   <button
                     onClick={() => setSelectedSource("Web citations")}
-                    className="rounded-md px-1.5 py-0.5 text-[#8a6414] underline decoration-[#ead8aa] underline-offset-2 transition hover:text-[#66490d]"
+                    className="rounded-md px-2 py-1 text-[#8a6414] underline decoration-[#ead8aa] underline-offset-2 transition hover:text-[#66490d]"
                   >
                     Web citations
                   </button>
@@ -1514,7 +1514,7 @@ function BuildStudioView() {
         </div>
 
         <div className="sticky bottom-0 mx-auto w-full max-w-[760px] bg-gradient-to-t from-[#fafafa] via-[#fafafa] to-transparent pt-5">
-          <div className="rounded-2xl border border-[#d8d8d8] bg-white p-2 shadow-[0_14px_34px_rgba(0,0,0,0.08)]">
+          <div className="rounded-lg border border-[#d8d8d8] bg-white p-2 shadow-[0_16px_32px_rgba(0,0,0,0.08)]">
             <textarea
               value={message}
               onChange={(event) => setMessage(event.target.value)}
@@ -1526,10 +1526,10 @@ function BuildStudioView() {
               }}
               placeholder="Ask Build to create a launch post, sales email, image prompt, landing section..."
               rows={1}
-              className="max-h-[160px] min-h-[42px] w-full resize-none bg-transparent px-3 py-2 text-sm leading-6 text-[#333] outline-none placeholder:text-[#8f8f8f]"
+              className="max-h-40 min-h-10 w-full resize-none bg-transparent px-3 py-2 text-sm leading-6 text-[#333] outline-none placeholder:text-[#8f8f8f]"
             />
             <div className="flex items-center justify-between gap-3 border-t border-[#ededed] px-2 pt-2">
-              <div className="flex items-center gap-1.5">
+              <div className="flex items-center gap-2">
                 <div className="relative">
                   <button
                     onClick={() => setUploadOpen((open) => !open)}
@@ -1539,7 +1539,7 @@ function BuildStudioView() {
                     <Plus size={18} />
                   </button>
                   {uploadOpen && (
-                    <div className="absolute bottom-10 left-0 z-40 w-[220px] overflow-hidden rounded-xl border border-[#d9d9d9] bg-white py-1 shadow-[0_14px_34px_rgba(0,0,0,0.14)]">
+                    <div className="absolute bottom-10 left-0 z-40 w-[220px] overflow-hidden rounded-lg border border-[#d9d9d9] bg-white py-1 shadow-[0_16px_32px_rgba(0,0,0,0.14)]">
                       <button className="flex w-full items-center gap-3 px-3 py-2 text-left text-sm text-[#444] transition hover:bg-[#f5f5f5]">
                         <Sparkles size={15} />
                         Upload image
@@ -1564,15 +1564,15 @@ function BuildStudioView() {
                 >
                   <Globe2 size={15} />
                   Search web
-              <span className={`relative h-[18px] w-8 rounded-full transition-colors duration-200 ease-in-out ${searchWeb ? "bg-[var(--brand-accent)]" : "bg-[#c7c7c7]"}`}>
-                    <span
-                      className="absolute left-0.5 top-0.5 h-3.5 w-3.5 rounded-full bg-white shadow-sm transition-transform duration-200 ease-in-out"
-                      style={{ transform: searchWeb ? "translateX(14px)" : "translateX(0)" }}
+              <span className={`relative h-5 w-8 rounded-full transition-colors duration-200 ease-in-out ${searchWeb ? "bg-[var(--brand-accent)]" : "bg-[#c7c7c7]"}`}>
+                <span
+                      className="absolute left-1 top-1 h-3 w-3 rounded-full bg-white shadow-sm transition-transform duration-200 ease-in-out"
+                      style={{ transform: searchWeb ? "translateX(12px)" : "translateX(0)" }}
                     />
-                  </span>
+              </span>
                 </button>
               </div>
-              <div className="flex items-center gap-1.5">
+              <div className="flex items-center gap-2">
                 <button className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-[#666] transition hover:bg-[#e2e2e2] hover:text-[#222]" title="Voice input">
                   <Mic size={17} />
                 </button>
@@ -1596,7 +1596,7 @@ function BuildStudioView() {
       >
         <button
           onClick={() => setRightRailCollapsed((collapsed) => !collapsed)}
-          className="absolute left-[-14px] top-5 z-20 flex h-7 w-7 items-center justify-center rounded-full border border-[#dedede] bg-white text-[#777] shadow-sm transition hover:text-[#333]"
+          className="absolute -left-4 top-5 z-20 flex h-8 w-8 items-center justify-center rounded-lg border border-[#dedede] bg-white text-[#777] shadow-sm transition hover:text-[#333]"
           title={rightRailCollapsed ? "Expand right rail" : "Collapse right rail"}
         >
           <ChevronRight size={15} className={`transition-transform duration-200 ease-in-out ${rightRailCollapsed ? "rotate-180" : ""}`} />
@@ -1719,7 +1719,7 @@ function WorkspaceTopbar({ active, setActive }) {
   ];
 
   return (
-    <header className="relative z-30 flex h-[64px] items-center justify-between border-b border-[#ececec] bg-white px-4 sm:px-5">
+    <header className="relative z-30 flex h-16 items-center justify-between border-b border-[#ececec] bg-white px-4 sm:px-5">
       <div className="relative flex min-w-0 items-center gap-3 lg:hidden">
         <button
           onClick={() => setWorkspaceMenuOpen((open) => !open)}
@@ -1734,7 +1734,7 @@ function WorkspaceTopbar({ active, setActive }) {
         </div>
 
         {workspaceMenuOpen && (
-          <div className="absolute left-0 top-12 z-40 w-[280px] overflow-hidden rounded-xl border border-[#e6e6e6] bg-white py-2 shadow-[0_14px_36px_rgba(0,0,0,0.12)]">
+          <div className="absolute left-0 top-12 z-40 w-[280px] overflow-hidden rounded-lg border border-[#e6e6e6] bg-white py-2 shadow-[0_16px_32px_rgba(0,0,0,0.12)]">
             <div className="border-b border-[#f0f0f0] px-3 pb-2">
               <div className="truncate text-sm font-semibold text-[#333]">{companyProfile.name}</div>
               <div className="truncate text-xs text-[#888]">{companyProfile.description}</div>
@@ -1783,7 +1783,7 @@ function WorkspaceTopbar({ active, setActive }) {
           </button>
 
           {desktopHistoryOpen && (
-            <div className="absolute right-0 top-11 z-40 w-[280px] overflow-hidden rounded-xl border border-[#e6e6e6] bg-white py-2 shadow-[0_14px_36px_rgba(0,0,0,0.12)]">
+            <div className="absolute right-0 top-11 z-40 w-[280px] overflow-hidden rounded-lg border border-[#e6e6e6] bg-white py-2 shadow-[0_16px_32px_rgba(0,0,0,0.12)]">
               <div className="border-b border-[#f0f0f0] px-3 pb-2">
                 <div className="text-sm font-medium text-[#333]">Version history</div>
                 <div className="text-xs text-[#888]">Recent workspace changes</div>
@@ -1799,7 +1799,7 @@ function WorkspaceTopbar({ active, setActive }) {
                     <div className="mt-1 h-2 w-2 shrink-0 rounded-full bg-[#b8b8b8]" />
                     <div className="min-w-0 flex-1">
                       <div className="truncate text-sm text-[#444]">{title}</div>
-                      <div className="mt-0.5 text-xs text-[#999]">{owner} · {time}</div>
+                      <div className="mt-1 text-xs text-[#999]">{owner} · {time}</div>
                     </div>
                   </button>
                 ))}
@@ -1825,7 +1825,7 @@ function WorkspaceTopbar({ active, setActive }) {
             <Clock3 size={16} />
           </button>
           {historyOpen && (
-            <div className="absolute right-0 top-11 z-40 w-[280px] overflow-hidden rounded-xl border border-[#e6e6e6] bg-white py-2 shadow-[0_14px_36px_rgba(0,0,0,0.12)]">
+            <div className="absolute right-0 top-11 z-40 w-[280px] overflow-hidden rounded-lg border border-[#e6e6e6] bg-white py-2 shadow-[0_16px_32px_rgba(0,0,0,0.12)]">
               <div className="border-b border-[#f0f0f0] px-3 pb-2">
                 <div className="text-sm font-medium text-[#333]">Version history</div>
                 <div className="text-xs text-[#888]">Recent workspace changes</div>
@@ -1841,7 +1841,7 @@ function WorkspaceTopbar({ active, setActive }) {
                     <div className="mt-1 h-2 w-2 shrink-0 rounded-full bg-[#b8b8b8]" />
                     <div className="min-w-0 flex-1">
                       <div className="truncate text-sm text-[#444]">{title}</div>
-                      <div className="mt-0.5 text-xs text-[#999]">{owner} · {time}</div>
+                      <div className="mt-1 text-xs text-[#999]">{owner} · {time}</div>
                     </div>
                   </button>
                 ))}
@@ -1888,7 +1888,7 @@ function MobileBottomNav({ active, setActive }) {
 
   return (
     <nav className="fixed inset-x-0 bottom-3 z-40 flex justify-center px-3 lg:hidden">
-      <div className="grid w-full max-w-[460px] grid-cols-3 gap-1 rounded-2xl border border-[#e5e5e5] bg-white/94 p-1 shadow-[0_14px_38px_rgba(0,0,0,0.14)] backdrop-blur">
+      <div className="grid w-full max-w-[460px] grid-cols-3 gap-1 rounded-lg border border-[#e5e5e5] bg-white/94 p-1 shadow-[0_16px_40px_rgba(0,0,0,0.14)] backdrop-blur">
         {items.map((item) => {
           const Icon = item.icon;
           const selected = active === item.id;
@@ -1896,11 +1896,11 @@ function MobileBottomNav({ active, setActive }) {
             <button
               key={item.id}
               onClick={() => setActive(item.id)}
-              className={`flex h-11 min-w-0 items-center justify-center gap-1 rounded-xl px-1 text-[11px] font-medium transition-all duration-200 min-[390px]:gap-1.5 min-[390px]:px-2 min-[390px]:text-[12px] ${
+              className={`flex h-11 min-w-0 items-center justify-center gap-1 rounded-md px-1 text-[11px] font-medium transition-all duration-200 min-[390px]:gap-2 min-[390px]:px-2 min-[390px]:text-[12px] ${
                 selected ? "bg-[var(--brand-accent)] text-white shadow-sm" : "text-[#707070] hover:bg-[#f6f6f6] hover:text-[var(--brand-accent)]"
               }`}
             >
-              <Icon size={16} strokeWidth={1.9} className="shrink-0 transition-transform duration-[250ms] ease-in-out min-[390px]:h-[17px] min-[390px]:w-[17px]" />
+              <Icon size={16} strokeWidth={1.9} className="shrink-0 transition-transform duration-200 ease-in-out min-[390px]:h-4 min-[390px]:w-4" />
               <span className="min-w-0 whitespace-nowrap">{item.label}</span>
             </button>
           );
