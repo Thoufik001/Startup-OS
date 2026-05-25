@@ -2732,48 +2732,13 @@ function LandingPageV2({ onGetStarted }) {
           </div>
         </section>
 
-        <section id="product" className="mx-auto max-w-[1040px] px-4 pb-20 sm:px-6 lg:px-8 lg:pb-24">
-          <div className="landing-reveal rounded-lg border border-[#e6e6e6] bg-[#fafafa] p-3 shadow-[0_20px_60px_rgba(0,0,0,0.08)]">
-            <div className="overflow-hidden rounded-lg border border-[#e8e8e8] bg-white">
-              <div className="flex h-12 items-center justify-between border-b border-[#eeeeee] px-4">
-                <div className="flex items-center gap-2">
-                  <span className="h-2.5 w-2.5 rounded-full bg-[#f05d42]" />
-                  <span className="h-2.5 w-2.5 rounded-full bg-[#f3c94f]" />
-                  <span className="h-2.5 w-2.5 rounded-full bg-[#28c840]" />
-                </div>
-                <span className="type-caption text-[#999]">Example brand workspace</span>
-              </div>
-              <div className="grid gap-4 p-4 lg:grid-cols-[1.15fr_0.85fr]">
-                <div className="rounded-lg bg-[#fafafa] p-5">
-                  <div className="type-label text-[#999]">Context health</div>
-                  <h2 className="h3 mt-2 max-w-[560px] text-[#262626]">Your brand context is ready for basic GTM output.</h2>
-                  <div className="mt-6 grid gap-2 sm:grid-cols-2">
-                    {["Positioning", "ICP", "Proof", "Design references"].map((item, index) => (
-                      <div key={item} className="flex items-center justify-between rounded-lg border border-[#eeeeee] bg-white px-3 py-3">
-                        <span className="type-card-title text-[#333]">{item}</span>
-                        <span className={`type-caption rounded-md px-2 py-1 ${index < 2 ? "border border-[var(--approved-border)] bg-[var(--approved-bg)] text-[var(--approved-text)]" : "bg-[#f1f1f1] text-[#777]"}`}>
-                          {index < 2 ? "Ready" : "Needs work"}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-                <div className="grid gap-3">
-                  <div className="rounded-lg bg-[#242424] p-4 text-white">
-                    <div className="type-caption text-white/55">Build request</div>
-                    <div className="mt-4 space-y-2 font-mono text-[13px] leading-6 text-white/75">
-                      <div>create founder post</div>
-                      <div>using Positioning + ICP + Proof</div>
-                      <div className="text-white">source trace attached</div>
-                    </div>
-                  </div>
-                  <div className="rounded-lg border border-[#eeeeee] bg-white p-4">
-                    <div className="type-caption text-[#999]">Next best move</div>
-                    <h3 className="type-section-title mt-2 text-[#303030]">Add 3 proof points, then build a founder LinkedIn post.</h3>
-                  </div>
-                </div>
-              </div>
-            </div>
+        <section id="product" className="mx-auto max-w-[1160px] px-4 pb-20 sm:px-6 lg:px-8 lg:pb-24">
+          <div className="landing-reveal overflow-hidden rounded-lg border border-[#e6e6e6] bg-[#fafafa] p-2 shadow-[0_24px_80px_rgba(0,0,0,0.08)]">
+            <img
+              src="/contextos-dashboard-hero.png"
+              alt="ContextOS brand dashboard showing context health, source coverage, recommendations, changelog, and recent builds"
+              className="block w-full rounded-md border border-[#eeeeee] bg-white"
+            />
           </div>
         </section>
 
