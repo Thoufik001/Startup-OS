@@ -760,26 +760,22 @@ function DefineView() {
                 </button>
               </div>
             </div>
-            <div className="overflow-hidden rounded-lg border border-[#e8e8e8] bg-white">
+            <div className="space-y-3">
               {selected.sources.map((file, i) => (
-                <div key={`${file.label}-${i}`} className="border-b border-[#eeeeee] p-4 last:border-0">
+                <div key={`${file.label}-${i}`} className="group">
                   <div className="flex items-start gap-3">
-                    <div
-                      className="mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-white"
-                      style={{ backgroundColor: i === 0 ? appColors.sourceRed : i === 1 ? appColors.sourceBlue : appColors.sourceGreen }}
-                    ><FileText size={17} /></div>
+                    <FileText size={24} strokeWidth={1.8} className="mt-0.5 shrink-0 text-[#8f8f8f]" />
                     <div className="min-w-0 flex-1">
                       <div className="flex flex-wrap items-center gap-2">
-                        <div className="type-card-title text-[#333]">{file.label}</div>
+                        <div className="inline border-b border-[#d9d9d9] text-[18px] font-semibold leading-7 text-[#333] group-hover:border-[#999]">{file.label}</div>
                         <span className="type-caption rounded-md bg-[#f3f3f3] px-2 py-0.5 text-[#777]">{file.type}</span>
                       </div>
                       {editing && file.type === "Manual" ? (
                         <textarea value={selected.synopsis} onChange={(event) => updateSelected({ synopsis: event.target.value, description: event.target.value })} rows={4} placeholder="Write the manual synopsis..." className="type-body mt-3 w-full resize-none rounded-lg border border-[#dddddd] bg-[#fafafa] px-3 py-3 text-[#444] outline-none focus:border-[#aaa]" />
                       ) : (
-                        <p className="type-body mt-2 text-[#666]">{sourcePreview(file)}</p>
+                        <p className="type-body mt-1 max-w-[620px] text-[#666]">{sourcePreview(file)}</p>
                       )}
                     </div>
-                    <ChevronRight size={16} className="mt-2 shrink-0 text-[#aaa]" />
                   </div>
                 </div>
               ))}
