@@ -2356,7 +2356,7 @@ function LandingPage({ onGetStarted }) {
   ];
   const stats = [
     ["40%", "faster first-draft GTM assets"],
-    ["6h", "saved on campaign brief prep"],
+    ["6h -> 15m", "from brief prep to ready draft"],
     ["85%", "less brand-context rework"],
   ];
   const useCases = {
@@ -2667,7 +2667,7 @@ function LandingPage({ onGetStarted }) {
 function LandingPageV2({ onGetStarted }) {
   const outcomes = [
     ["40%", "faster first-draft GTM assets"],
-    ["6h", "saved on campaign brief prep"],
+    ["6h -> 15m", "from brief prep to ready draft"],
     ["85%", "less brand-context rework"],
   ];
   const workflow = [
@@ -2708,7 +2708,7 @@ function LandingPageV2({ onGetStarted }) {
             Brand memory for startup teams
           </div>
           <h1 className="landing-reveal display mx-auto mt-5 max-w-[820px] text-[#202020]" style={{ "--delay": "80ms" }}>
-            Stop rebuilding GTM context. Build every asset from one trusted brand memory.
+            Give your brand a brain. Build GTM assets that know what to say.
           </h1>
           <p className="landing-reveal body-lg mx-auto mt-4 max-w-[680px] text-[#666]" style={{ "--delay": "140ms" }}>
             ContextOS helps founders, PMs, and GTM teams keep positioning, proof, customer notes, and design references ready for consistent content, sales, and launch assets.
