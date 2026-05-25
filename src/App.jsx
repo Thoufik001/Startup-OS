@@ -17,8 +17,12 @@ import {
   FileText,
   Folder,
   Globe2,
+  GripVertical,
   Inbox,
   Layers3,
+  List,
+  ListChecks,
+  ListOrdered,
   MailPlus,
   MessageSquareText,
   Mic,
@@ -622,6 +626,199 @@ function DashboardV2({ setActive }) {
     </div>
   );
 }
+
+const blockOptions = [
+  { type: "paragraph", label: "Text", shortcut: "", mark: "T" },
+  { type: "h1", label: "Heading 1", shortcut: "#", mark: "H1" },
+  { type: "h2", label: "Heading 2", shortcut: "##", mark: "H2" },
+  { type: "h3", label: "Heading 3", shortcut: "###", mark: "H3" },
+  { type: "h4", label: "Heading 4", shortcut: "####", mark: "H4" },
+  { type: "bullet", label: "Bulleted list", shortcut: "-", icon: List },
+  { type: "number", label: "Numbered list", shortcut: "1.", icon: ListOrdered },
+  { type: "todo", label: "To-do list", shortcut: "[]", icon: ListChecks },
+];
+
+function normalizeSourceBlocks(source, fallbackText) {
+  if (source.blocks?.length) return source.blocks;
+  return fallbackText
+    .split(/\n{2,}/)
+    .map((text, index) => ({ id: `block-${source.label}-${index}`, type: "paragraph", text: text.trim() }))
+    .filter((block) => block.text);
+}
+
+function blocksToContent(blocks) {
+  return blocks.map((block) => block.text).join("\n\n");
+}
+
+function SourcePageEditor({ source, parentTitle, sourceIcon, fallbackText, updateSource }) {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [menuBlockId, setMenuBlockId] = useState(null);
+  const [filter, setFilter] = useState("");
+  const blocks = normalizeSourceBlocks(source, fallbackText);
+  const commitBlocks = (nextBlocks) => updateSource({ blocks: nextBlocks, content: blocksToContent(nextBlocks) });
+  const updateBlock = (id, patch) => {
+    commitBlocks(blocks.map((block) => block.id === id ? { ...block, ...patch } : block));
+  };
+  const addBlockAfter = (id, type = "paragraph", text = "") => {
+    const index = blocks.findIndex((block) => block.id === id);
+    const nextBlock = { id: `block-${Date.now()}`, type, text };
+    const nextBlocks = [...blocks];
+    nextBlocks.splice(index + 1, 0, nextBlock);
+    commitBlocks(nextBlocks);
+    setMenuBlockId(nextBlock.id);
+  };
+  const applyBlockType = (type) => {
+    const targetId = menuBlockId || blocks[0]?.id;
+    if (!targetId) return;
+    updateBlock(targetId, { type, text: blocks.find((block) => block.id === targetId)?.text.replace(/^\/\w*/, "").trimStart() || "" });
+    setMenuOpen(false);
+    setFilter("");
+  };
+  const filteredOptions = blockOptions.filter((option) => option.label.toLowerCase().includes(filter.toLowerCase()));
+  const { Icon, color } = sourceIcon(source.type);
+
+  return (
+    <div className="mx-auto max-w-[940px] px-7 py-12 sm:px-12 lg:px-16">
+      <div className="mb-8">
+        <Icon size={34} strokeWidth={1.7} style={{ color }} />
+      </div>
+      <input
+        value={source.label}
+        onChange={(event) => updateSource({ label: event.target.value })}
+        className="display w-full border-0 bg-transparent p-0 text-[#2f2f2f] outline-none placeholder:text-[#b5b5b5]"
+        placeholder="Untitled"
+      />
+      <div className="mt-7 grid max-w-[520px] grid-cols-[120px_minmax(0,1fr)] gap-x-4 gap-y-3 border-b border-[#eeeeee] pb-7">
+        <div className="caption text-[#999]">Type</div>
+        <select
+          value={source.type}
+          onChange={(event) => updateSource({ type: event.target.value })}
+          className="body-sm w-fit rounded-md border border-transparent bg-transparent px-1 text-[#555] outline-none hover:border-[#e5e5e5] hover:bg-[#fafafa]"
+        >
+          <option>Manual</option>
+          <option>Notes</option>
+          <option>Doc</option>
+          <option>Image</option>
+        </select>
+        <div className="caption text-[#999]">Used by</div>
+        <div className="body-sm text-[#555]">{parentTitle}</div>
+        <div className="caption text-[#999]">Status</div>
+        <select
+          value={source.status || "Draft"}
+          onChange={(event) => updateSource({ status: event.target.value })}
+          className="body-sm w-fit rounded-md border border-transparent bg-transparent px-1 text-[#555] outline-none hover:border-[#e5e5e5] hover:bg-[#fafafa]"
+        >
+          <option>Draft</option>
+          <option>Ready</option>
+          <option>Needs context</option>
+        </select>
+      </div>
+
+      <div className="relative mt-10 space-y-1">
+        {blocks.map((block, index) => {
+          const option = blockOptions.find((item) => item.type === block.type) || blockOptions[0];
+          const BlockIcon = option.icon;
+          const isHeading = block.type.startsWith("h");
+          const textClass = block.type === "h1"
+            ? "h1"
+            : block.type === "h2"
+              ? "h2"
+              : block.type === "h3"
+                ? "h3"
+                : block.type === "h4"
+                  ? "h4"
+                  : "body-lg";
+          return (
+            <div key={block.id} className="group relative flex items-start gap-3">
+              <div className="absolute -left-16 top-1 hidden items-center gap-1 text-[#a5a5a5] group-hover:flex">
+                <button
+                  onClick={() => { setMenuBlockId(block.id); setMenuOpen(true); }}
+                  className="flex h-7 w-7 items-center justify-center rounded-md hover:bg-[#f1f1f1] hover:text-[#555]"
+                  title="Add block"
+                >
+                  <Plus size={18} />
+                </button>
+                <button className="flex h-7 w-7 cursor-grab items-center justify-center rounded-md hover:bg-[#f1f1f1] hover:text-[#555]" title="Drag to move">
+                  <GripVertical size={17} />
+                </button>
+              </div>
+              {block.type === "bullet" && <div className="mt-[11px] h-1.5 w-1.5 shrink-0 rounded-full bg-[#383838]" />}
+              {block.type === "number" && <div className="body-lg w-7 shrink-0 text-[#555]">{index + 1}.</div>}
+              {block.type === "todo" && <input type="checkbox" className="mt-2.5 h-4 w-4 shrink-0 accent-[#383838]" />}
+              <textarea
+                value={block.text}
+                onFocus={() => setMenuBlockId(block.id)}
+                onChange={(event) => {
+                  const value = event.target.value;
+                  updateBlock(block.id, { text: value });
+                  if (value.endsWith("/") || value.includes("/")) {
+                    setMenuBlockId(block.id);
+                    setMenuOpen(true);
+                    setFilter(value.split("/").pop());
+                  }
+                }}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter" && !event.shiftKey) {
+                    event.preventDefault();
+                    addBlockAfter(block.id);
+                  }
+                  if (event.key === "Escape") {
+                    setMenuOpen(false);
+                    setFilter("");
+                  }
+                }}
+                rows={isHeading ? 1 : Math.max(1, Math.ceil((block.text.length || 20) / 80))}
+                placeholder={index === 0 ? "Type '/' for commands" : ""}
+                className={`${textClass} min-h-[34px] flex-1 resize-none overflow-hidden border-0 bg-transparent p-0 text-[#2f2f2f] outline-none placeholder:text-[#aaa]`}
+              />
+              {BlockIcon && <span className="sr-only"><BlockIcon size={16} /></span>}
+            </div>
+          );
+        })}
+
+        {menuOpen && (
+          <div className="absolute left-[-14px] top-8 z-20 w-[420px] max-w-[calc(100vw-40px)] overflow-hidden rounded-xl border border-[#e5e5e5] bg-white shadow-[0_18px_50px_rgba(0,0,0,0.14)]">
+            <div className="px-4 py-3">
+              <div className="label text-[#777]">Basic blocks</div>
+              <div className="mt-3 max-h-[340px] overflow-y-auto pr-1">
+                {filteredOptions.map((option, index) => {
+                  const OptionIcon = option.icon;
+                  return (
+                    <button
+                      key={option.type}
+                      onClick={() => applyBlockType(option.type)}
+                      className={`flex w-full items-center gap-4 rounded-lg px-3 py-2.5 text-left ${index === 0 ? "bg-[#f1f0ef]" : "hover:bg-[#f7f7f7]"}`}
+                    >
+                      <div className="flex w-8 shrink-0 items-center justify-center text-[#333]">
+                        {OptionIcon ? <OptionIcon size={21} strokeWidth={1.8} /> : <span className="h4">{option.mark}</span>}
+                      </div>
+                      <div className="label flex-1 text-[#333]">{option.label}</div>
+                      {option.shortcut && <div className="body-sm text-[#aaa]">{option.shortcut}</div>}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+            <div className="border-t border-[#eeeeee] px-3 py-3">
+              <input
+                value={filter}
+                onChange={(event) => setFilter(event.target.value)}
+                autoFocus
+                placeholder="Type to filter..."
+                className="body w-full rounded-lg bg-[#f4f4f4] px-3 py-2 text-[#555] outline-none placeholder:text-[#999]"
+              />
+            </div>
+            <button onClick={() => setMenuOpen(false)} className="flex w-full items-center justify-between border-t border-[#eeeeee] px-4 py-3 text-left">
+              <span className="label text-[#444]">Close menu</span>
+              <span className="body-sm text-[#aaa]">esc</span>
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function DefineView({ createRequest }) {
   const makeSourcePage = (item, index) => ({
     ...item,
@@ -837,7 +1034,7 @@ function DefineView({ createRequest }) {
         </div>
         </div>
         {selectedSource && createPortal(
-          <aside className="fixed inset-y-0 right-0 z-50 w-full max-w-[720px] overflow-y-auto border-l border-[#e5e5e5] bg-white shadow-[-18px_0_44px_rgba(0,0,0,0.10)]">
+          <aside className="fixed inset-y-0 right-0 z-50 w-full max-w-[1040px] overflow-y-auto border-l border-[#e5e5e5] bg-white shadow-[-18px_0_44px_rgba(0,0,0,0.10)]">
             <div className="sticky top-0 z-10 flex h-12 items-center justify-between border-b border-[#eeeeee] bg-white px-4">
               <div className="flex items-center gap-2 text-[#777]">
                 <button onClick={() => setSelectedSourceIndex(null)} className="rounded-lg p-1.5 hover:bg-[#f5f5f5]" title="Close source page">
@@ -849,76 +1046,13 @@ function DefineView({ createRequest }) {
                 <MoreHorizontal size={18} className="text-[#777]" />
               </div>
             </div>
-            <div className="mx-auto max-w-[560px] px-8 py-10">
-              <div className="mb-6">
-                {(() => {
-                  const { Icon, color } = sourceIcon(selectedSource.type);
-                  return <Icon size={34} strokeWidth={1.7} style={{ color }} />;
-                })()}
-              </div>
-              <input
-                value={selectedSource.label}
-                onChange={(event) => updateSource({ label: event.target.value })}
-                className="h1 w-full border-0 bg-transparent p-0 text-[#2f2f2f] outline-none"
-              />
-              <div className="mt-6 space-y-3 border-b border-[#eeeeee] pb-6">
-                <div className="grid grid-cols-[120px_minmax(0,1fr)] items-center gap-3">
-                  <div className="caption text-[#999]">Type</div>
-                  <select
-                    value={selectedSource.type}
-                    onChange={(event) => updateSource({ type: event.target.value })}
-                    className="body-sm rounded-md border border-transparent bg-transparent px-2 py-1 text-[#555] outline-none hover:border-[#e5e5e5] hover:bg-[#fafafa]"
-                  >
-                    <option>Manual</option>
-                    <option>Notes</option>
-                    <option>Doc</option>
-                    <option>Image</option>
-                  </select>
-                </div>
-                <div className="grid grid-cols-[120px_minmax(0,1fr)] items-center gap-3">
-                  <div className="caption text-[#999]">Used by</div>
-                  <input
-                    value={selected.title}
-                    readOnly
-                    className="body-sm rounded-md border border-transparent bg-transparent px-2 py-1 text-[#555] outline-none"
-                  />
-                </div>
-                <div className="grid grid-cols-[120px_minmax(0,1fr)] items-center gap-3">
-                  <div className="caption text-[#999]">Status</div>
-                  <select
-                    value={selectedSource.status || "Draft"}
-                    onChange={(event) => updateSource({ status: event.target.value })}
-                    className="body-sm rounded-md border border-transparent bg-transparent px-2 py-1 text-[#555] outline-none hover:border-[#e5e5e5] hover:bg-[#fafafa]"
-                  >
-                    <option>Draft</option>
-                    <option>Ready</option>
-                    <option>Needs context</option>
-                  </select>
-                </div>
-              </div>
-              <div className="mt-6 flex flex-wrap gap-2">
-                {[
-                  ["Text", "Add a paragraph block"],
-                  ["Heading", "Add a heading block"],
-                  ["Bullets", "Add bullet notes"],
-                ].map(([label, text]) => (
-                  <button
-                    key={label}
-                    onClick={() => updateSource({ content: `${sourcePreview(selectedSource)}\n\n${text}` })}
-                    className="label rounded-lg border border-[#e5e5e5] bg-white px-3 py-1.5 text-[#555] hover:bg-[#f7f7f7]"
-                  >
-                    + {label}
-                  </button>
-                ))}
-              </div>
-              <textarea
-                value={sourcePreview(selectedSource)}
-                onChange={(event) => updateSource({ content: event.target.value })}
-                rows={16}
-                placeholder="Type '/' for commands, or paste notes, research, links, and raw source context..."
-                className="body-lg mt-6 w-full resize-none border-0 bg-transparent p-0 text-[#444] outline-none placeholder:text-[#999]"
-              />
-            </div>
+            <SourcePageEditor
+              source={selectedSource}
+              parentTitle={selected.title}
+              sourceIcon={sourceIcon}
+              fallbackText={sourcePreview(selectedSource)}
+              updateSource={updateSource}
+            />
           </aside>,
           document.body
         )}
