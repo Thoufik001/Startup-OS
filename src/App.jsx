@@ -40,7 +40,7 @@ const companyProfile = {
   name: "DeployIQ",
   description: "SAP Staff Augmentation",
   brandAccent: "#242424",
-  brandAccentHover: "#111111",
+  brandAccentHover: "#303030",
   brandAccentSoft: "#F4F4F4",
   brandAccentRing: "#E2E2E2",
 };
@@ -50,7 +50,7 @@ const appColors = {
   approvedText: "#2E7D4F",
   approvedBorder: "#CFECDD",
   verified: "#36b8ee",
-  contextWarm: "#e97855",
+  contextWarm: "#3A3A3A",
   sourceRed: "#f05d42",
   sourceBlue: "#2f7dd1",
   sourceGreen: "#1d8f52",
