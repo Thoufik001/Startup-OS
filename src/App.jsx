@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import {
   Archive,
@@ -17,12 +17,10 @@ import {
   FileText,
   Folder,
   Globe2,
-  GripVertical,
   Home,
   Inbox,
   Layers3,
   List,
-  ListChecks,
   ListOrdered,
   MailPlus,
   MessageSquareText,
@@ -127,6 +125,67 @@ const knowledge = [
     section: "Growth",
   },
 ];
+
+const currentUser = {
+  name: "Thoufik",
+  role: "Product Designer",
+};
+
+const makeSourcePage = (item, index) => ({
+  ...item,
+  synopsis: item.description,
+  aiSummary: `${item.title} combines the saved synopsis, pasted notes, uploaded files, and manual source fields into one usable context block for Build.`,
+  sources: [
+    { id: `${item.id}-synopsis`, label: "Synopsis form", type: "Manual", versions: [] },
+    { id: `${item.id}-notes`, label: index % 2 === 0 ? "Founder notes" : "Pasted notes", type: "Notes", versions: [] },
+    { id: `${item.id}-deck`, label: index % 3 === 0 ? "Reference deck" : "Source doc", type: index % 3 === 0 ? "Slides" : "Doc", versions: [] },
+  ],
+});
+
+const initialSourcePages = knowledge.map(makeSourcePage);
+
+function cloneSourceForVersion(source) {
+  const { versions, ...snapshot } = source;
+  return {
+    ...snapshot,
+    blocks: source.blocks?.map((block) => ({ ...block })),
+    images: source.images?.map((image) => ({ ...image })),
+  };
+}
+
+function sourceComparable(source) {
+  const snapshot = cloneSourceForVersion(source);
+  return JSON.stringify(snapshot);
+}
+
+function summarizeSourceDiff(previous, next) {
+  const changes = [];
+  if (previous.label !== next.label) changes.push("renamed page");
+  if (previous.type !== next.type) changes.push(`changed type to ${next.type}`);
+  if ((previous.status || "Draft") !== (next.status || "Draft")) changes.push(`changed status to ${next.status || "Draft"}`);
+  if ((previous.content || "") !== (next.content || "") || (previous.contentHtml || "") !== (next.contentHtml || "")) changes.push("edited page content");
+  if (JSON.stringify(previous.blocks || []) !== JSON.stringify(next.blocks || [])) changes.push("updated document blocks");
+  if (JSON.stringify(previous.images || []) !== JSON.stringify(next.images || [])) changes.push("updated image references");
+  return changes.length ? changes.join(", ") : "saved page state";
+}
+
+function formatVersionTime(timestamp) {
+  if (!timestamp) return "Unknown time";
+  const date = new Date(timestamp);
+  if (Number.isNaN(date.getTime())) return timestamp;
+  return date.toLocaleString([], { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
+}
+
+function getContextChangelog(sourcePages) {
+  return sourcePages
+    .flatMap((page) => (page.sources || []).flatMap((source) => (source.versions || []).map((version) => ({
+      ...version,
+      sourceName: `${page.title} / ${version.sourceName || source.label}`,
+      section: page.section,
+    }))))
+    .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+    .slice(0, 5);
+}
 
 const artifacts = [
   { title: "Founder LinkedIn post", source: "Positioning + ICP", time: "12 min ago", type: "Social" },
@@ -340,7 +399,10 @@ function LeftSidebar({ active, setActive, collapsed, setCollapsed, sidebarWidth,
                   <span className="flex items-center gap-2">
                     <contextAction.Icon size={15} /> {contextAction.label}
                   </span>
-                  <span className="rounded-md bg-white/12 px-2 py-1 text-[11px] font-medium text-white/72">Cmd N</span>
+                  <span className="micro inline-flex items-center gap-1 text-white/72">
+                    <Command size={12} strokeWidth={2} />
+                    N
+                  </span>
                 </button>
               )}
               <button
@@ -496,7 +558,7 @@ function Dashboard({ setActive }) {
   );
 }
 
-function DashboardV2({ setActive }) {
+function DashboardV2({ setActive, sourcePages = initialSourcePages }) {
   const healthItems = [
     { label: "Positioning", status: "Ready", tone: "strong" },
     { label: "ICP", status: "Ready", tone: "strong" },
@@ -507,11 +569,12 @@ function DashboardV2({ setActive }) {
     { label: "Source coverage", value: "4/7", detail: "Core context blocks filled" },
     { label: "Traceability", value: "62%", detail: "RAG + web citations" },
   ];
-  const recentArtifacts = [
-    ["Founder LinkedIn post", "12 min ago"],
-    ["Landing page hero", "1h ago"],
-    ["Cold email sequence", "3h ago"],
-    ["Competitor battlecard", "Yesterday"],
+  const recentBuilds = [
+    { title: "Founder LinkedIn post", detail: "From Positioning + ICP", time: "12 min ago", type: "Social" },
+    { title: "Landing page hero", detail: "From Positioning + Value Prop", time: "1h ago", type: "Website" },
+    { title: "Cold email sequence", detail: "From ICP + Proof", time: "3h ago", type: "Email" },
+    { title: "Competitor battlecard", detail: "From Competitors + Proof", time: "Yesterday", type: "Sales" },
+    { title: "Image prompt", detail: "From Design System + Proof", time: "Yesterday", type: "Visual" },
   ];
   const recommendations = [
     { title: "Capture proof", detail: "Add 3 customer wins or screenshots.", view: "define" },
@@ -523,10 +586,17 @@ function DashboardV2({ setActive }) {
     "No design references added",
     "Competitor notes are still draft",
   ];
+  const [changelogIndex, setChangelogIndex] = useState(0);
+  const [buildIndex, setBuildIndex] = useState(0);
+  const contextChangelog = getContextChangelog(sourcePages);
+  const recentChangelog = contextChangelog.slice(0, 5);
+  const recentBuildList = recentBuilds.slice(0, 5);
+  const activeChangelogIndex = Math.min(changelogIndex, Math.max(recentChangelog.length - 1, 0));
+  const activeBuildIndex = Math.min(buildIndex, Math.max(recentBuildList.length - 1, 0));
 
   return (
-    <div className="mx-auto min-h-full max-w-[1120px] px-4 py-5 pb-24 sm:px-6 lg:py-8">
-      <section className="rounded-lg border border-[#e6e6e6] bg-white p-5 sm:p-6">
+    <div className="mx-auto min-h-full max-w-[1120px] px-4 pb-24 pt-8 sm:px-6 lg:pt-12">
+      <section>
         <div className="grid gap-4 lg:grid-cols-[minmax(0,3fr)_minmax(150px,1fr)_minmax(150px,1fr)] lg:items-stretch">
           <div className="lg:pr-8">
             <div className="type-label text-[#999]">Context health</div>
@@ -548,7 +618,7 @@ function DashboardV2({ setActive }) {
           ))}
         </div>
 
-        <div className="mt-5 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-8 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
           {healthItems.map((item) => (
             <button key={item.label} onClick={() => setActive("define")} className="flex items-center justify-between gap-3 rounded-lg border border-[#eeeeee] bg-[#fafafa] px-3 py-3 text-left transition hover:bg-white">
               <span className="type-card-title text-[#333]">{item.label}</span>
@@ -560,7 +630,7 @@ function DashboardV2({ setActive }) {
         </div>
       </section>
 
-      <section className="mt-4 grid gap-4 lg:grid-cols-[minmax(0,1fr)_360px]">
+      <section className="mt-5 grid gap-4 lg:grid-cols-[minmax(0,1fr)_360px]">
         <div className="rounded-lg border border-[#e6e6e6] bg-white p-5 sm:p-6">
           <div className="type-label text-[#999]">Next best move</div>
           <h2 className="type-section-title mt-2 text-[#303030]">Add 3 proof points, then build a founder LinkedIn post.</h2>
@@ -610,34 +680,112 @@ function DashboardV2({ setActive }) {
         </div>
       </section>
 
-      <section className="mt-4 rounded-lg border border-[#e6e6e6] bg-white p-5">
-        <div className="mb-3 flex items-center justify-between gap-4">
-          <h2 className="type-section-title text-[#303030]">Recent artifacts</h2>
-          <button onClick={() => setActive("build")} className="type-body font-medium text-[#555] underline decoration-[#d7d7d7] underline-offset-4 hover:text-[#222]">Open Build</button>
+      <section className="mt-4 grid gap-4 lg:grid-cols-2">
+        <div className="rounded-lg border border-[#e6e6e6] bg-white p-5">
+          <div className="mb-4 flex flex-wrap items-start justify-between gap-4">
+            <div>
+              <h2 className="type-section-title text-[#303030]">Context changelog</h2>
+              <p className="type-caption mt-1 text-[#888]">Recent 5 saved source edits.</p>
+            </div>
+            {recentChangelog.length ? (
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setChangelogIndex((index) => Math.max(index - 1, 0))}
+                  disabled={activeChangelogIndex === 0}
+                  className="flex h-7 w-7 items-center justify-center rounded-md border border-[#e6e6e6] text-[#666] disabled:opacity-35"
+                >
+                  <ChevronRight size={15} className="rotate-180" />
+                </button>
+                <span className="type-caption min-w-12 text-center text-[#888]">{activeChangelogIndex + 1} of {recentChangelog.length}</span>
+                <button
+                  onClick={() => setChangelogIndex((index) => Math.min(index + 1, recentChangelog.length - 1))}
+                  disabled={activeChangelogIndex >= recentChangelog.length - 1}
+                  className="flex h-7 w-7 items-center justify-center rounded-md border border-[#e6e6e6] text-[#666] disabled:opacity-35"
+                >
+                  <ChevronRight size={15} />
+                </button>
+                <Clock3 size={17} className="text-[#999]" />
+              </div>
+            ) : (
+              <Clock3 size={17} className="text-[#999]" />
+            )}
+          </div>
+
+          {recentChangelog.length ? (
+            <div className="divide-y divide-[#eeeeee]">
+              {recentChangelog.map((entry, index) => (
+                <button
+                  key={entry.id}
+                  onClick={() => { setChangelogIndex(index); setActive("define"); }}
+                  className={`grid w-full grid-cols-[minmax(0,1fr)_112px] gap-4 py-3 text-left transition hover:bg-[#fafafa] ${activeChangelogIndex === index ? "text-[#2b2b2b]" : ""}`}
+                >
+                  <span className="min-w-0">
+                    <span className="type-card-title block truncate text-[#333]">{entry.sourceName}</span>
+                    <span className="type-caption mt-1 block truncate text-[#777]">{entry.summary} · by {entry.editor}</span>
+                  </span>
+                  <span className="type-caption text-right text-[#999]">{formatVersionTime(entry.timestamp)}</span>
+                </button>
+              ))}
+            </div>
+          ) : (
+            <div className="flex min-h-24 items-center rounded-lg bg-[#fafafa] p-4">
+              <p className="type-body text-[#666]">No saved source edits yet.</p>
+            </div>
+          )}
         </div>
-        <div className="divide-y divide-[#eeeeee]">
-          {recentArtifacts.map(([title, time]) => (
-            <button key={title} onClick={() => setActive("build")} className="grid w-full grid-cols-[minmax(0,1fr)_90px] gap-4 py-3 text-left transition hover:bg-[#fafafa]">
-              <span className="type-card-title truncate text-[#333]">{title}</span>
-              <span className="type-body text-right text-[#999]">{time}</span>
-            </button>
-          ))}
+
+        <div className="rounded-lg border border-[#e6e6e6] bg-white p-5">
+          <div className="mb-4 flex flex-wrap items-start justify-between gap-4">
+            <div>
+              <h2 className="type-section-title text-[#303030]">Recent Build</h2>
+              <p className="type-caption mt-1 text-[#888]">Recent 5 generated outputs.</p>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setBuildIndex((index) => Math.max(index - 1, 0))}
+                disabled={activeBuildIndex === 0}
+                className="flex h-7 w-7 items-center justify-center rounded-md border border-[#e6e6e6] text-[#666] disabled:opacity-35"
+              >
+                <ChevronRight size={15} className="rotate-180" />
+              </button>
+              <span className="type-caption min-w-12 text-center text-[#888]">{activeBuildIndex + 1} of {recentBuildList.length}</span>
+              <button
+                onClick={() => setBuildIndex((index) => Math.min(index + 1, recentBuildList.length - 1))}
+                disabled={activeBuildIndex >= recentBuildList.length - 1}
+                className="flex h-7 w-7 items-center justify-center rounded-md border border-[#e6e6e6] text-[#666] disabled:opacity-35"
+              >
+                <ChevronRight size={15} />
+              </button>
+              <button onClick={() => setActive("build")} className="type-caption font-medium text-[#555] underline decoration-[#d7d7d7] underline-offset-4 hover:text-[#222]">Open</button>
+            </div>
+          </div>
+
+          {recentBuildList.length ? (
+            <div className="divide-y divide-[#eeeeee]">
+              {recentBuildList.map((entry, index) => (
+                <button
+                  key={entry.title}
+                  onClick={() => { setBuildIndex(index); setActive("build"); }}
+                  className={`grid w-full grid-cols-[minmax(0,1fr)_88px] gap-4 py-3 text-left transition hover:bg-[#fafafa] ${activeBuildIndex === index ? "text-[#2b2b2b]" : ""}`}
+                >
+                  <span className="min-w-0">
+                    <span className="type-card-title block truncate text-[#333]">{entry.title}</span>
+                    <span className="type-caption mt-1 block truncate text-[#777]">{entry.detail}</span>
+                  </span>
+                  <span className="type-caption text-right text-[#999]">{entry.time}</span>
+                </button>
+              ))}
+            </div>
+          ) : (
+            <div className="flex min-h-24 items-center rounded-lg bg-[#fafafa] p-4">
+              <p className="type-body text-[#666]">No generated outputs yet.</p>
+            </div>
+          )}
         </div>
       </section>
     </div>
   );
 }
-
-const blockOptions = [
-  { type: "paragraph", label: "Text", shortcut: "", mark: "T" },
-  { type: "h1", label: "Heading 1", shortcut: "#", mark: "H1" },
-  { type: "h2", label: "Heading 2", shortcut: "##", mark: "H2" },
-  { type: "h3", label: "Heading 3", shortcut: "###", mark: "H3" },
-  { type: "h4", label: "Heading 4", shortcut: "####", mark: "H4" },
-  { type: "bullet", label: "Bulleted list", shortcut: "-", icon: List },
-  { type: "number", label: "Numbered list", shortcut: "1.", icon: ListOrdered },
-  { type: "todo", label: "To-do list", shortcut: "[]", icon: ListChecks },
-];
 
 function normalizeSourceBlocks(source, fallbackText) {
   if (source.blocks?.length) return source.blocks;
@@ -651,168 +799,344 @@ function blocksToContent(blocks) {
   return blocks.map((block) => block.text).join("\n\n");
 }
 
-function SourcePageEditor({ source, parentTitle, sourceIcon, fallbackText, updateSource }) {
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [menuBlockId, setMenuBlockId] = useState(null);
-  const [filter, setFilter] = useState("");
-  const blocks = normalizeSourceBlocks(source, fallbackText);
-  const commitBlocks = (nextBlocks) => updateSource({ blocks: nextBlocks, content: blocksToContent(nextBlocks) });
-  const updateBlock = (id, patch) => {
-    commitBlocks(blocks.map((block) => block.id === id ? { ...block, ...patch } : block));
+function escapeHtml(value) {
+  return value
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;");
+}
+
+function contentToHtml(content) {
+  const paragraphs = content
+    .split(/\n{2,}/)
+    .map((text) => text.trim())
+    .filter(Boolean);
+
+  return paragraphs.length
+    ? paragraphs.map((text) => `<p>${escapeHtml(text).replaceAll("\n", "<br>")}</p>`).join("")
+    : "<p><br></p>";
+}
+
+function htmlToPlainText(html) {
+  if (!html) return "";
+  const element = document.createElement("div");
+  element.innerHTML = html;
+  return element.innerText.trim();
+}
+
+function sourceToPlainText(source, parentTitle) {
+  const lines = [
+    source.label || source.fileName || "Source page",
+    parentTitle ? `Source block: ${parentTitle}` : "",
+    source.type ? `Type: ${source.type}` : "",
+    "",
+  ].filter(Boolean);
+  const body = source.textContent || source.content || htmlToPlainText(source.contentHtml) || "";
+  const images = source.images?.length
+    ? source.images.map((image, index) => `${index + 1}. ${image.fileName} (${formatFileSize(image.fileSize)})`)
+    : [];
+
+  if (body) lines.push(body);
+  if (images.length) lines.push("", "Images", ...images);
+  if (!body && !images.length && source.fileName) lines.push(`${source.fileName} (${formatFileSize(source.fileSize)})`);
+
+  return lines.join("\n");
+}
+
+function sourceToExportHtml(source, parentTitle) {
+  const safeTitle = escapeHtml(source.label || source.fileName || "Source page");
+  const metadata = [parentTitle, source.type, source.uploadedAt ? `Uploaded ${source.uploadedAt}` : ""].filter(Boolean);
+  const bodyHtml = source.contentHtml || (source.textContent ? `<pre>${escapeHtml(source.textContent)}</pre>` : contentToHtml(source.content || ""));
+  const images = source.images?.length
+    ? source.images
+    : source.type === "Image" && source.fileDataUrl
+      ? [{ fileName: source.fileName || source.label, fileDataUrl: source.fileDataUrl, fileSize: source.fileSize }]
+      : [];
+
+  return `<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>${safeTitle}</title>
+  <style>
+    body { font-family: "Geist", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: #2b2b2b; margin: 48px; }
+    h1 { font-size: 32px; line-height: 40px; letter-spacing: -0.04em; margin: 0 0 12px; }
+    .meta { color: #777; font-size: 13px; line-height: 20px; margin-bottom: 32px; }
+    .content { font-size: 16px; line-height: 28px; }
+    .content h1 { font-size: 28px; line-height: 36px; }
+    .content h2 { font-size: 24px; line-height: 32px; }
+    .content h3 { font-size: 20px; line-height: 28px; }
+    .content img { max-width: 100%; border-radius: 8px; }
+    figure { break-inside: avoid; margin: 0 0 24px; }
+    figcaption { color: #777; font-size: 12px; margin-top: 8px; }
+    pre { white-space: pre-wrap; font: inherit; }
+  </style>
+</head>
+<body>
+  <h1>${safeTitle}</h1>
+  <div class="meta">${metadata.map(escapeHtml).join(" · ")}</div>
+  <main class="content">
+    ${images.length ? images.map((image) => `<figure><img src="${image.fileDataUrl}" alt="${escapeHtml(image.fileName || "Image reference")}" /><figcaption>${escapeHtml(image.fileName || "Image reference")} · ${formatFileSize(image.fileSize)}</figcaption></figure>`).join("") : bodyHtml}
+  </main>
+  <script>window.addEventListener("load", () => setTimeout(() => window.print(), 250));</script>
+</body>
+</html>`;
+}
+
+function SourcePageEditor({ source, sourceIcon, fallbackText, saveSource }) {
+  const getInitialContent = (page) => page.content || blocksToContent(normalizeSourceBlocks(page, fallbackText));
+  const getInitialHtml = (page) => page.contentHtml || contentToHtml(getInitialContent(page));
+  const editorRef = useRef(null);
+  const [draftSource, setDraftSource] = useState(() => ({
+    ...source,
+    content: getInitialContent(source),
+    contentHtml: getInitialHtml(source),
+  }));
+  const [dirty, setDirty] = useState(false);
+
+  useEffect(() => {
+    const contentHtml = getInitialHtml(source);
+    setDraftSource({
+      ...source,
+      content: getInitialContent(source),
+      contentHtml,
+    });
+    if (editorRef.current) editorRef.current.innerHTML = contentHtml;
+    setDirty(false);
+  }, [source]);
+
+  useEffect(() => {
+    if (!dirty || sourceComparable(source) === sourceComparable(draftSource)) return undefined;
+    const timer = window.setTimeout(() => saveSource(draftSource), 900);
+    return () => window.clearTimeout(timer);
+  }, [dirty, draftSource, saveSource, source]);
+
+  const updateDraft = (patch) => {
+    setDirty(true);
+    setDraftSource((current) => ({ ...current, ...patch }));
   };
-  const addBlockAfter = (id, type = "paragraph", text = "") => {
-    const index = blocks.findIndex((block) => block.id === id);
-    const nextBlock = { id: `block-${Date.now()}`, type, text };
-    const nextBlocks = [...blocks];
-    nextBlocks.splice(index + 1, 0, nextBlock);
-    commitBlocks(nextBlocks);
-    setMenuBlockId(nextBlock.id);
+
+  const syncEditorContent = () => {
+    const editor = editorRef.current;
+    if (!editor) return;
+    const content = editor.innerText.trim();
+    updateDraft({
+      content,
+      contentHtml: editor.innerHTML,
+      blocks: content
+        .split(/\n{2,}/)
+        .map((text, index) => ({ id: `block-${draftSource.id || draftSource.label}-${index}`, type: "paragraph", text: text.trim() }))
+        .filter((block) => block.text),
+    });
   };
-  const applyBlockType = (type) => {
-    const targetId = menuBlockId || blocks[0]?.id;
-    if (!targetId) return;
-    updateBlock(targetId, { type, text: blocks.find((block) => block.id === targetId)?.text.replace(/^\/\w*/, "").trimStart() || "" });
-    setMenuOpen(false);
-    setFilter("");
+  const focusEditorEnd = () => {
+    const editor = editorRef.current;
+    if (!editor) return;
+    editor.focus();
+    const range = document.createRange();
+    range.selectNodeContents(editor);
+    range.collapse(false);
+    const selection = window.getSelection();
+    selection.removeAllRanges();
+    selection.addRange(range);
   };
-  const filteredOptions = blockOptions.filter((option) => option.label.toLowerCase().includes(filter.toLowerCase()));
-  const { Icon, color } = sourceIcon(source.type);
+  const applyFormat = (command, value = null) => {
+    editorRef.current?.focus();
+    document.execCommand(command, false, value);
+    syncEditorContent();
+  };
+  const { Icon, color } = sourceIcon(draftSource.type);
+  const toolbarButtonClass = "label flex h-8 min-w-8 items-center justify-center rounded-md px-2 text-[#555] transition hover:bg-[#eeeeee] hover:text-[#2f2f2f]";
 
   return (
-    <div className="mx-auto max-w-[940px] px-4 py-8 sm:px-6 lg:px-10 lg:py-10">
-      <div className="mb-8">
-        <Icon size={34} strokeWidth={1.7} style={{ color }} />
+    <div className="mx-auto max-w-[860px] px-4 pb-24 pt-16 sm:px-6 lg:px-10">
+      <div className="mb-6">
+        <Icon size={36} strokeWidth={1.7} style={{ color }} />
       </div>
       <input
-        value={source.label}
-        onChange={(event) => updateSource({ label: event.target.value })}
+        value={draftSource.label}
+        onChange={(event) => updateDraft({ label: event.target.value })}
         className="display w-full border-0 bg-transparent p-0 text-[#2f2f2f] outline-none placeholder:text-[#b5b5b5]"
         placeholder="Untitled"
       />
-      <div className="mt-8 grid max-w-[520px] grid-cols-[120px_minmax(0,1fr)] gap-x-4 gap-y-3 border-b border-[#eeeeee] pb-6">
-        <div className="caption text-[#999]">Type</div>
-        <select
-          value={source.type}
-          onChange={(event) => updateSource({ type: event.target.value })}
-          className="body-sm w-fit rounded-md border border-transparent bg-transparent px-1 text-[#555] outline-none hover:border-[#e5e5e5] hover:bg-[#fafafa]"
-        >
-          <option>Manual</option>
-          <option>Notes</option>
-          <option>Doc</option>
-          <option>Image</option>
-        </select>
-        <div className="caption text-[#999]">Used by</div>
-        <div className="body-sm text-[#555]">{parentTitle}</div>
-        <div className="caption text-[#999]">Status</div>
-        <select
-          value={source.status || "Draft"}
-          onChange={(event) => updateSource({ status: event.target.value })}
-          className="body-sm w-fit rounded-md border border-transparent bg-transparent px-1 text-[#555] outline-none hover:border-[#e5e5e5] hover:bg-[#fafafa]"
-        >
-          <option>Draft</option>
-          <option>Ready</option>
-          <option>Needs context</option>
-        </select>
+      <div className="sticky top-12 z-10 mt-8 flex flex-wrap items-center gap-1 border-y border-[#eeeeee] bg-white/95 py-2 backdrop-blur">
+        <button type="button" onClick={() => applyFormat("bold")} className={toolbarButtonClass} title="Bold">
+          B
+        </button>
+        <button type="button" onClick={() => applyFormat("italic")} className={`${toolbarButtonClass} italic`} title="Italic">
+          I
+        </button>
+        <span className="mx-1 h-5 w-px bg-[#e5e5e5]" />
+        <button type="button" onClick={() => applyFormat("formatBlock", "H1")} className={toolbarButtonClass} title="Heading 1">
+          H1
+        </button>
+        <button type="button" onClick={() => applyFormat("formatBlock", "H2")} className={toolbarButtonClass} title="Heading 2">
+          H2
+        </button>
+        <button type="button" onClick={() => applyFormat("formatBlock", "H3")} className={toolbarButtonClass} title="Heading 3">
+          H3
+        </button>
+        <button type="button" onClick={() => applyFormat("formatBlock", "P")} className={toolbarButtonClass} title="Paragraph">
+          T
+        </button>
+        <span className="mx-1 h-5 w-px bg-[#e5e5e5]" />
+        <button type="button" onClick={() => applyFormat("insertUnorderedList")} className={toolbarButtonClass} title="Bullet list">
+          <List size={16} />
+        </button>
+        <button type="button" onClick={() => applyFormat("insertOrderedList")} className={toolbarButtonClass} title="Numbered list">
+          <ListOrdered size={16} />
+        </button>
+      </div>
+      <div
+        ref={editorRef}
+        contentEditable
+        suppressContentEditableWarning
+        data-placeholder="Start writing..."
+        onInput={syncEditorContent}
+        onBlur={syncEditorContent}
+        onClick={(event) => {
+          if (event.target !== event.currentTarget) return;
+          const editor = editorRef.current;
+          const lastBlock = editor?.lastElementChild;
+          if (editor && lastBlock?.textContent?.trim()) {
+            editor.insertAdjacentHTML("beforeend", "<p><br></p>");
+            syncEditorContent();
+          }
+          focusEditorEnd();
+        }}
+        className="source-rich-editor body-lg min-h-[520px] w-full border-0 bg-transparent py-8 text-[#2f2f2f] outline-none"
+      />
+    </div>
+  );
+}
+
+function formatFileSize(bytes) {
+  if (!bytes) return "Unknown size";
+  if (bytes < 1024 * 1024) return `${Math.max(1, Math.round(bytes / 1024))} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+function readFileAsDataUrl(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+async function fileToSource(file, type) {
+  const attachment = await fileToAttachment(file);
+
+  return {
+    id: `source-${Date.now()}-${file.name}`,
+    label: file.name,
+    type,
+    fileName: attachment.fileName,
+    fileType: attachment.fileType,
+    fileSize: attachment.fileSize,
+    fileDataUrl: attachment.fileDataUrl,
+    textContent: attachment.textContent,
+    images: type === "Image" ? [attachment] : undefined,
+    uploadedAt: "Just now",
+    versions: [],
+  };
+}
+
+async function fileToAttachment(file) {
+  const dataUrl = await readFileAsDataUrl(file);
+  const isText = file.type.startsWith("text/") || /\.(md|txt|csv)$/i.test(file.name);
+  const textContent = isText ? await file.text() : "";
+
+  return {
+    id: `file-${Date.now()}-${file.name}`,
+    fileName: file.name,
+    fileType: file.type || "Unknown type",
+    fileSize: file.size,
+    fileDataUrl: dataUrl,
+    textContent,
+  };
+}
+
+async function filesToImageSource(files) {
+  const images = await Promise.all(files.map(fileToAttachment));
+  const totalSize = images.reduce((sum, image) => sum + (image.fileSize || 0), 0);
+  const firstImage = images[0];
+
+  return {
+    id: `source-images-${Date.now()}`,
+    label: images.length === 1 ? firstImage.fileName : `Image references (${images.length})`,
+    type: "Image",
+    fileName: images.length === 1 ? firstImage.fileName : "Image references",
+    fileType: images.length === 1 ? firstImage.fileType : "Image collection",
+    fileSize: totalSize,
+    fileDataUrl: firstImage.fileDataUrl,
+    images,
+    uploadedAt: "Just now",
+    versions: [],
+  };
+}
+
+function SourceFilePreview({ source, sourceIcon }) {
+  const { Icon, color } = sourceIcon(source.type);
+  const images = source.images?.length
+    ? source.images
+    : source.type === "Image" && source.fileDataUrl
+      ? [{
+          fileName: source.fileName || source.label,
+          fileType: source.fileType,
+          fileSize: source.fileSize,
+          fileDataUrl: source.fileDataUrl,
+        }]
+      : [];
+  const isImage = source.type === "Image" && images.length > 0;
+  const isPdf = source.fileType === "application/pdf" && source.fileDataUrl;
+  const hasTextPreview = Boolean(source.textContent);
+
+  return (
+    <div className="mx-auto max-w-[920px] px-4 pb-24 pt-16 sm:px-6 lg:px-10">
+      <div className="mb-6 flex h-12 w-12 items-center justify-center rounded-lg bg-[#f4f4f4]">
+        <Icon size={26} strokeWidth={1.7} style={{ color }} />
+      </div>
+      <h1 className="display break-words text-[#2f2f2f]">{source.fileName || source.label}</h1>
+      <div className="mt-4 flex flex-wrap gap-3 text-[#777]">
+        {isImage && images.length > 1 ? <span className="caption">{images.length} images</span> : null}
+        <span className="caption">{source.fileType || source.type}</span>
+        <span className="caption">{formatFileSize(source.fileSize)}</span>
+        <span className="caption">Uploaded {source.uploadedAt || "Just now"}</span>
       </div>
 
-      <div className="relative mt-10 space-y-1">
-        {blocks.map((block, index) => {
-          const option = blockOptions.find((item) => item.type === block.type) || blockOptions[0];
-          const BlockIcon = option.icon;
-          const isHeading = block.type.startsWith("h");
-          const textClass = block.type === "h1"
-            ? "h1"
-            : block.type === "h2"
-              ? "h2"
-              : block.type === "h3"
-                ? "h3"
-                : block.type === "h4"
-                  ? "h4"
-                  : "body-lg";
-          return (
-            <div key={block.id} className="group relative flex items-start gap-3">
-              <div className="absolute -left-16 top-1 hidden items-center gap-1 text-[#a5a5a5] group-hover:flex">
-                <button
-                  onClick={() => { setMenuBlockId(block.id); setMenuOpen(true); }}
-                  className="flex h-8 w-8 items-center justify-center rounded-md hover:bg-[#f1f1f1] hover:text-[#555]"
-                  title="Add block"
-                >
-                  <Plus size={18} />
-                </button>
-                <button className="flex h-8 w-8 cursor-grab items-center justify-center rounded-md hover:bg-[#f1f1f1] hover:text-[#555]" title="Drag to move">
-                  <GripVertical size={17} />
-                </button>
-              </div>
-              {block.type === "bullet" && <div className="mt-3 h-2 w-2 shrink-0 rounded-full bg-[#383838]" />}
-              {block.type === "number" && <div className="body-lg w-8 shrink-0 text-[#555]">{index + 1}.</div>}
-              {block.type === "todo" && <input type="checkbox" className="mt-2 h-4 w-4 shrink-0 accent-[#383838]" />}
-              <textarea
-                value={block.text}
-                onFocus={() => setMenuBlockId(block.id)}
-                onChange={(event) => {
-                  const value = event.target.value;
-                  updateBlock(block.id, { text: value });
-                  if (value.endsWith("/") || value.includes("/")) {
-                    setMenuBlockId(block.id);
-                    setMenuOpen(true);
-                    setFilter(value.split("/").pop());
-                  }
-                }}
-                onKeyDown={(event) => {
-                  if (event.key === "Enter" && !event.shiftKey) {
-                    event.preventDefault();
-                    addBlockAfter(block.id);
-                  }
-                  if (event.key === "Escape") {
-                    setMenuOpen(false);
-                    setFilter("");
-                  }
-                }}
-                rows={isHeading ? 1 : Math.max(1, Math.ceil((block.text.length || 20) / 80))}
-                placeholder={index === 0 ? "Type '/' for commands" : ""}
-                className={`${textClass} min-h-8 flex-1 resize-none overflow-hidden border-0 bg-transparent p-0 text-[#2f2f2f] outline-none placeholder:text-[#aaa]`}
-              />
-              {BlockIcon && <span className="sr-only"><BlockIcon size={16} /></span>}
-            </div>
-          );
-        })}
-
-        {menuOpen && (
-          <div className="absolute -left-4 top-8 z-20 w-[420px] max-w-[calc(100vw-40px)] overflow-hidden rounded-lg border border-[#e5e5e5] bg-white shadow-[0_16px_48px_rgba(0,0,0,0.14)]">
-            <div className="px-4 py-3">
-              <div className="label text-[#777]">Basic blocks</div>
-              <div className="mt-3 max-h-80 overflow-y-auto pr-1">
-                {filteredOptions.map((option, index) => {
-                  const OptionIcon = option.icon;
-                  return (
-                    <button
-                      key={option.type}
-                      onClick={() => applyBlockType(option.type)}
-                      className={`flex w-full items-center gap-4 rounded-lg px-3 py-2 text-left ${index === 0 ? "bg-[#f1f0ef]" : "hover:bg-[#f7f7f7]"}`}
-                    >
-                      <div className="flex w-8 shrink-0 items-center justify-center text-[#333]">
-                        {OptionIcon ? <OptionIcon size={21} strokeWidth={1.8} /> : <span className="h4">{option.mark}</span>}
-                      </div>
-                      <div className="label flex-1 text-[#333]">{option.label}</div>
-                      {option.shortcut && <div className="body-sm text-[#aaa]">{option.shortcut}</div>}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-            <div className="border-t border-[#eeeeee] px-3 py-3">
-              <input
-                value={filter}
-                onChange={(event) => setFilter(event.target.value)}
-                autoFocus
-                placeholder="Type to filter..."
-                className="body w-full rounded-lg bg-[#f4f4f4] px-3 py-2 text-[#555] outline-none placeholder:text-[#999]"
-              />
-            </div>
-            <button onClick={() => setMenuOpen(false)} className="flex w-full items-center justify-between border-t border-[#eeeeee] px-4 py-3 text-left">
-              <span className="label text-[#444]">Close menu</span>
-              <span className="body-sm text-[#aaa]">esc</span>
-            </button>
+      <div className="mt-8 overflow-hidden rounded-lg border border-[#e7e7e7] bg-[#f7f7f7]">
+        {isImage && images.length > 1 ? (
+          <div className="grid gap-4 bg-[#f7f7f7] p-4 sm:grid-cols-2">
+            {images.map((image) => (
+              <figure key={image.id || image.fileName} className="overflow-hidden rounded-lg border border-[#e1e1e1] bg-white">
+                <div className="flex aspect-[4/3] items-center justify-center bg-[#f4f4f4] p-3">
+                  <img src={image.fileDataUrl} alt={image.fileName} className="max-h-full max-w-full rounded-md object-contain" />
+                </div>
+                <figcaption className="flex items-center justify-between gap-3 border-t border-[#eeeeee] px-3 py-2">
+                  <span className="body-sm min-w-0 truncate text-[#333]">{image.fileName}</span>
+                  <span className="micro shrink-0 text-[#888]">{formatFileSize(image.fileSize)}</span>
+                </figcaption>
+              </figure>
+            ))}
+          </div>
+        ) : isImage ? (
+          <div className="flex min-h-[520px] items-center justify-center bg-[#f7f7f7] p-4">
+            <img src={images[0].fileDataUrl} alt={images[0].fileName || source.label} className="max-h-[680px] max-w-full rounded-md object-contain" />
+          </div>
+        ) : isPdf ? (
+          <iframe title={source.fileName || source.label} src={source.fileDataUrl} className="h-[720px] w-full bg-white" />
+        ) : hasTextPreview ? (
+          <pre className="body-lg min-h-[520px] whitespace-pre-wrap bg-white p-6 text-[#333]">{source.textContent}</pre>
+        ) : (
+          <div className="flex min-h-[420px] flex-col items-center justify-center px-6 text-center">
+            <FileText size={38} strokeWidth={1.5} className="text-[#777]" />
+            <h2 className="h4 mt-4 text-[#333]">Preview not available</h2>
+            <p className="body mt-2 max-w-[460px] text-[#777]">
+              This file is attached to the source library. A later backend pass can extract and summarize it for Build.
+            </p>
           </div>
         )}
       </div>
@@ -820,22 +1144,14 @@ function SourcePageEditor({ source, parentTitle, sourceIcon, fallbackText, updat
   );
 }
 
-function DefineView({ createRequest }) {
-  const makeSourcePage = (item, index) => ({
-    ...item,
-    synopsis: item.description,
-    aiSummary: `${item.title} combines the saved synopsis, pasted notes, uploaded files, and manual source fields into one usable context block for Build.`,
-    sources: [
-      { label: "Synopsis form", type: "Manual" },
-      { label: index % 2 === 0 ? "Founder notes" : "Pasted notes", type: "Notes" },
-      { label: index % 3 === 0 ? "Reference deck" : "Source doc", type: index % 3 === 0 ? "Slides" : "Doc" },
-    ],
-  });
-  const [sourcePages, setSourcePages] = useState(() => knowledge.map(makeSourcePage));
+function DefineView({ createRequest, sourcePages, setSourcePages }) {
   const [selectedId, setSelectedId] = useState(knowledge[0].id);
   const [editing, setEditing] = useState(false);
   const [mobileDetailOpen, setMobileDetailOpen] = useState(false);
   const [selectedSourceIndex, setSelectedSourceIndex] = useState(null);
+  const [sourceCopied, setSourceCopied] = useState(false);
+  const docInputRef = useRef(null);
+  const imageInputRef = useRef(null);
   const selected = sourcePages.find((item) => item.id === selectedId) || sourcePages[0];
   const SelectedIcon = selected.icon;
   const updateSelected = (patch) => {
@@ -871,15 +1187,102 @@ function DefineView({ createRequest }) {
     setMobileDetailOpen(false);
   };
   const attachSource = (type) => {
-    const label = type === "Image" ? "Image reference" : type === "Doc" ? "Uploaded doc" : type === "Manual" ? "Untitled page" : "Pasted text";
-    updateSelected({ sources: [...selected.sources, { label, type }] });
+    const label = type === "Manual" ? "Untitled page" : "Attached source";
+    updateSelected({ sources: [...selected.sources, { id: `source-${Date.now()}`, label, type, versions: [] }] });
     setSelectedSourceIndex(selected.sources.length);
+  };
+  const handleUploadedFiles = async (event, type) => {
+    const files = Array.from(event.target.files || []);
+    if (!files.length) return;
+    const uploadedSources = type === "Image"
+      ? [await filesToImageSource(files)]
+      : await Promise.all(files.map((file) => fileToSource(file, type)));
+    updateSelected({ sources: [...selected.sources, ...uploadedSources] });
+    setSelectedSourceIndex(selected.sources.length);
+    event.target.value = "";
   };
   const selectedSource = selected.sources[selectedSourceIndex] || null;
   const updateSource = (patch) => {
     if (selectedSourceIndex === null) return;
     updateSelected({
       sources: selected.sources.map((source, index) => index === selectedSourceIndex ? { ...source, ...patch } : source),
+    });
+  };
+  const deleteSelectedSource = () => {
+    if (selectedSourceIndex === null) return;
+    updateSelected({
+      sources: selected.sources.filter((_, index) => index !== selectedSourceIndex),
+    });
+    setSelectedSourceIndex(null);
+  };
+  const copySelectedSource = async () => {
+    if (!selectedSource) return;
+    const text = sourceToPlainText(selectedSource, selected.title);
+    if (navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(text);
+    } else {
+      const textarea = document.createElement("textarea");
+      textarea.value = text;
+      textarea.style.position = "fixed";
+      textarea.style.opacity = "0";
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand("copy");
+      textarea.remove();
+    }
+    setSourceCopied(true);
+    window.setTimeout(() => setSourceCopied(false), 1400);
+  };
+  const exportSelectedSourcePdf = () => {
+    if (!selectedSource) return;
+    const printWindow = window.open("", "_blank");
+    if (!printWindow) return;
+    printWindow.document.open();
+    printWindow.document.write(sourceToExportHtml(selectedSource, selected.title));
+    printWindow.document.close();
+  };
+  const saveSource = (nextSource) => {
+    if (selectedSourceIndex === null) return;
+    const previousSource = selected.sources[selectedSourceIndex];
+    if (!previousSource || sourceComparable(previousSource) === sourceComparable(nextSource)) return;
+    const version = {
+      id: `version-${Date.now()}`,
+      timestamp: new Date().toISOString(),
+      editor: currentUser.name,
+      sourceName: previousSource.label,
+      summary: summarizeSourceDiff(previousSource, nextSource),
+      snapshot: cloneSourceForVersion(previousSource),
+    };
+    updateSelected({
+      sources: selected.sources.map((source, index) => index === selectedSourceIndex ? {
+        ...nextSource,
+        id: previousSource.id || nextSource.id || `source-${Date.now()}`,
+        versions: [version, ...(previousSource.versions || [])].slice(0, 20),
+        updated: "Just now",
+        lastEditedBy: currentUser.name,
+      } : source),
+    });
+  };
+  const restoreSourceVersion = (version) => {
+    if (selectedSourceIndex === null) return;
+    const previousSource = selected.sources[selectedSourceIndex];
+    if (!previousSource || !version?.snapshot) return;
+    const restoreRecord = {
+      id: `version-${Date.now()}`,
+      timestamp: new Date().toISOString(),
+      editor: currentUser.name,
+      sourceName: previousSource.label,
+      summary: `restored version from ${formatVersionTime(version.timestamp)}`,
+      snapshot: cloneSourceForVersion(previousSource),
+    };
+    updateSelected({
+      sources: selected.sources.map((source, index) => index === selectedSourceIndex ? {
+        ...version.snapshot,
+        id: previousSource.id || version.snapshot.id,
+        versions: [restoreRecord, ...(previousSource.versions || [])].slice(0, 20),
+        updated: "Just now",
+        lastEditedBy: currentUser.name,
+      } : source),
     });
   };
   const sourcePreview = (file) => {
@@ -1009,15 +1412,28 @@ function DefineView({ createRequest }) {
                 <button onClick={() => attachSource("Manual")} className="label flex h-8 items-center gap-2 rounded-lg bg-[var(--brand-accent)] px-3 text-white hover:bg-[var(--brand-accent-hover)]">
                   <Plus size={15} /> Create Page
                 </button>
-                <button onClick={() => attachSource("Doc")} className="label flex h-8 items-center gap-2 rounded-lg border border-[#dedede] px-3 text-[#555] hover:bg-[#f7f7f7]">
+                <button onClick={() => docInputRef.current?.click()} className="label flex h-8 items-center gap-2 rounded-lg border border-[#dedede] px-3 text-[#555] hover:bg-[#f7f7f7]">
                   <FileText size={15} /> Upload Doc
                 </button>
-                <button onClick={() => attachSource("Image")} className="label flex h-8 items-center gap-2 rounded-lg border border-[#dedede] px-3 text-[#555] hover:bg-[#f7f7f7]">
+                <button onClick={() => imageInputRef.current?.click()} className="label flex h-8 items-center gap-2 rounded-lg border border-[#dedede] px-3 text-[#555] hover:bg-[#f7f7f7]">
                   <Layers3 size={15} /> Add Image
                 </button>
-                <button onClick={() => attachSource("Note")} className="label flex h-8 items-center gap-2 rounded-lg border border-[#dedede] px-3 text-[#555] hover:bg-[#f7f7f7]">
-                  <MessageSquareText size={15} /> Paste Text
-                </button>
+                <input
+                  ref={docInputRef}
+                  type="file"
+                  multiple
+                  accept=".pdf,.doc,.docx,.ppt,.pptx,.txt,.md,.csv,application/pdf,text/plain,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                  className="hidden"
+                  onChange={(event) => handleUploadedFiles(event, "Doc")}
+                />
+                <input
+                  ref={imageInputRef}
+                  type="file"
+                  multiple
+                  accept="image/*"
+                  className="hidden"
+                  onChange={(event) => handleUploadedFiles(event, "Image")}
+                />
               </div>
             </div>
             <div className="space-y-2">
@@ -1035,7 +1451,7 @@ function DefineView({ createRequest }) {
         </div>
         </div>
         {selectedSource && createPortal(
-          <aside className="fixed inset-y-0 right-0 z-50 w-full max-w-[1040px] overflow-y-auto border-l border-[#e5e5e5] bg-white shadow-[-18px_0_44px_rgba(0,0,0,0.10)]">
+          <aside className="source-overlay-panel fixed inset-y-0 right-0 z-50 w-full max-w-[1040px] overflow-y-auto border-l border-[#e5e5e5] bg-white shadow-[-18px_0_44px_rgba(0,0,0,0.10)]">
             <div className="sticky top-0 z-10 flex h-12 items-center justify-between border-b border-[#eeeeee] bg-white px-4">
               <div className="flex items-center gap-2 text-[#777]">
                 <button onClick={() => setSelectedSourceIndex(null)} className="rounded-lg p-2 hover:bg-[#f5f5f5]" title="Close source page">
@@ -1043,17 +1459,27 @@ function DefineView({ createRequest }) {
                 </button>
               </div>
               <div className="flex items-center gap-2">
-                <button className="label rounded-lg px-2 py-1 text-[#555] hover:bg-[#f5f5f5]">Share</button>
-                <MoreHorizontal size={18} className="text-[#777]" />
+                <button onClick={copySelectedSource} className="label flex items-center gap-2 rounded-lg px-2 py-1 text-[#555] hover:bg-[#f5f5f5]">
+                  {sourceCopied ? <Check size={15} /> : <Copy size={15} />} {sourceCopied ? "Copied" : "Copy contents"}
+                </button>
+                <button onClick={exportSelectedSourcePdf} className="label flex items-center gap-2 rounded-lg px-2 py-1 text-[#555] hover:bg-[#f5f5f5]">
+                  <FileText size={15} /> Export PDF
+                </button>
+                <button onClick={deleteSelectedSource} className="label flex items-center gap-2 rounded-lg px-2 py-1 text-[#b42318] hover:bg-[#fff7f5]">
+                  <Trash2 size={15} /> Delete
+                </button>
               </div>
             </div>
-            <SourcePageEditor
-              source={selectedSource}
-              parentTitle={selected.title}
-              sourceIcon={sourceIcon}
-              fallbackText={sourcePreview(selectedSource)}
-              updateSource={updateSource}
-            />
+            {selectedSource.fileDataUrl || selectedSource.images?.length ? (
+              <SourceFilePreview source={selectedSource} sourceIcon={sourceIcon} />
+            ) : (
+              <SourcePageEditor
+                source={selectedSource}
+                sourceIcon={sourceIcon}
+                fallbackText={sourcePreview(selectedSource)}
+                saveSource={saveSource}
+              />
+            )}
           </aside>,
           document.body
         )}
@@ -1913,12 +2339,119 @@ function MobileBottomNav({ active, setActive }) {
   );
 }
 
+function LandingPage({ onGetStarted }) {
+  const capabilities = [
+    { icon: BookOpen, title: "Define context once", text: "Capture positioning, ICP, proof, competitors, tone, and design references as reusable source pages." },
+    { icon: Bot, title: "Build from trusted memory", text: "Generate posts, landing sections, emails, and sales assets from saved startup context." },
+    { icon: Clock3, title: "Trace what changed", text: "Keep version history and source traceability visible so teams trust every AI output." },
+  ];
+
+  return (
+    <div className="min-h-screen bg-white text-[#292929]">
+      <header className="mx-auto flex max-w-[1120px] items-center justify-between px-4 py-5 sm:px-6 lg:px-8">
+        <button onClick={onGetStarted} className="flex items-center gap-3 text-left">
+          <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#2b2b2b] text-white">
+            <Sparkles size={18} />
+          </span>
+          <span>
+            <span className="type-card-title block text-[#262626]">ContextOS</span>
+            <span className="type-caption block text-[#777]">Startup context for AI execution</span>
+          </span>
+        </button>
+        <button onClick={onGetStarted} className="label hidden h-9 items-center gap-2 rounded-lg bg-[#2b2b2b] px-3 text-white transition hover:bg-[#333] sm:flex">
+          Get started <ArrowRight size={15} />
+        </button>
+      </header>
+
+      <main className="mx-auto grid min-h-[calc(100vh-76px)] max-w-[1120px] items-center gap-10 px-4 pb-12 pt-6 sm:px-6 lg:grid-cols-[minmax(0,0.95fr)_minmax(420px,1.05fr)] lg:px-8">
+        <section>
+          <div className="type-label text-[#999]">Context to GTM output</div>
+          <h1 className="display mt-3 max-w-[680px] text-[#242424]">
+            Build startup artifacts from one trusted brand memory.
+          </h1>
+          <p className="body-lg mt-4 max-w-[560px] text-[#666]">
+            ContextOS helps early teams define their positioning, proof, customers, and design references once, then generate grounded GTM assets with visible source traceability.
+          </p>
+          <div className="mt-6 flex flex-wrap gap-3">
+            <button onClick={onGetStarted} className="label flex h-10 items-center gap-2 rounded-lg bg-[#2b2b2b] px-4 text-white transition hover:bg-[#333]">
+              Get started <ArrowRight size={16} />
+            </button>
+            <button onClick={onGetStarted} className="label h-10 rounded-lg border border-[#dedede] bg-white px-4 text-[#444] transition hover:bg-[#f7f7f7]">
+              View dashboard
+            </button>
+          </div>
+
+          <div className="mt-8 grid gap-3 sm:grid-cols-3">
+            {capabilities.map((item) => {
+              const Icon = item.icon;
+              return (
+                <div key={item.title} className="rounded-lg border border-[#eeeeee] bg-[#fafafa] p-4">
+                  <Icon size={18} className="text-[#555]" />
+                  <h2 className="type-card-title mt-3 text-[#303030]">{item.title}</h2>
+                  <p className="type-caption mt-2 text-[#777]">{item.text}</p>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+
+        <section className="rounded-lg border border-[#e6e6e6] bg-[#fafafa] p-4 shadow-[0_20px_60px_rgba(0,0,0,0.08)]">
+          <div className="rounded-lg border border-[#e7e7e7] bg-white">
+            <div className="flex h-12 items-center justify-between border-b border-[#eeeeee] px-4">
+              <div className="flex items-center gap-2">
+                <span className="h-2.5 w-2.5 rounded-full bg-[#f05d42]" />
+                <span className="h-2.5 w-2.5 rounded-full bg-[#f3c94f]" />
+                <span className="h-2.5 w-2.5 rounded-full bg-[#28c840]" />
+              </div>
+              <span className="type-caption text-[#999]">DeployIQ workspace</span>
+            </div>
+            <div className="grid gap-4 p-4">
+              <div>
+                <div className="type-label text-[#999]">Context health</div>
+                <div className="h3 mt-2 max-w-[520px] text-[#262626]">DeployIQ context is 68% ready for GTM output.</div>
+              </div>
+              <div className="grid gap-3 sm:grid-cols-2">
+                <div className="rounded-lg bg-[#f7f7f7] p-4">
+                  <div className="type-label text-[#999]">Source coverage</div>
+                  <div className="display mt-6 text-[#262626]">4/7</div>
+                  <div className="type-caption text-[#777]">Core context blocks filled</div>
+                </div>
+                <div className="rounded-lg bg-[#f7f7f7] p-4">
+                  <div className="type-label text-[#999]">Traceability</div>
+                  <div className="display mt-6 text-[#262626]">62%</div>
+                  <div className="type-caption text-[#777]">RAG + web citations</div>
+                </div>
+              </div>
+              <div className="grid gap-2 sm:grid-cols-2">
+                {["Positioning", "ICP", "Proof", "Competitors"].map((item, index) => (
+                  <div key={item} className="flex items-center justify-between rounded-lg border border-[#eeeeee] bg-white px-3 py-3">
+                    <span className="type-card-title text-[#333]">{item}</span>
+                    <span className={`type-caption rounded-md px-2 py-1 ${index < 2 ? "border border-[var(--approved-border)] bg-[var(--approved-bg)] text-[var(--approved-text)]" : "bg-[#f1f1f1] text-[#777]"}`}>
+                      {index < 2 ? "Ready" : index === 2 ? "Needs evidence" : "Draft"}
+                    </span>
+                  </div>
+                ))}
+              </div>
+              <div className="rounded-lg border border-[#eeeeee] bg-white p-4">
+                <div className="type-label text-[#999]">Next best move</div>
+                <div className="type-section-title mt-2 text-[#303030]">Add 3 proof points, then build a founder LinkedIn post.</div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+  );
+}
+
 export default function App() {
   const [active, setActive] = useState("dashboard");
+  const [hasStarted, setHasStarted] = useState(() => window.location.hash === "#dashboard");
   const [transitionDirection, setTransitionDirection] = useState(1);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [sidebarWidth, setSidebarWidth] = useState(280);
   const [createSourceRequest, setCreateSourceRequest] = useState(0);
+  const [sourcePages, setSourcePages] = useState(initialSourcePages);
   const viewOrder = ["dashboard", "define", "build"];
   const brandTheme = {
     "--brand-accent": companyProfile.brandAccent,
@@ -1945,6 +2478,20 @@ export default function App() {
     setActive(nextActive);
   };
 
+  const startProduct = () => {
+    setHasStarted(true);
+    navigateTo("dashboard");
+    window.history.replaceState(null, "", "#dashboard");
+  };
+
+  if (!hasStarted) {
+    return (
+      <div style={brandTheme}>
+        <LandingPage onGetStarted={startProduct} />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-white text-[#292929]" style={brandTheme}>
       <div className="flex h-screen min-h-screen w-full overflow-hidden bg-white">
@@ -1968,8 +2515,8 @@ export default function App() {
               className="min-h-full animate-[contentSlide_240ms_ease-in-out] will-change-transform"
               style={{ "--content-enter-x": `${transitionDirection * 18}px` }}
             >
-              {active === "dashboard" && <DashboardV2 setActive={navigateTo} />}
-              {active === "define" && <DefineView createRequest={createSourceRequest} />}
+              {active === "dashboard" && <DashboardV2 setActive={navigateTo} sourcePages={sourcePages} />}
+              {active === "define" && <DefineView createRequest={createSourceRequest} sourcePages={sourcePages} setSourcePages={setSourcePages} />}
               {active === "build" && <BuildStudioView />}
             </div>
           </div>

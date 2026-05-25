@@ -81,6 +81,75 @@ select {
   font: inherit;
 }
 
+.source-overlay-panel {
+  animation: sourceOverlayIn 180ms ease-in both;
+  will-change: transform, opacity;
+}
+
+@keyframes sourceOverlayIn {
+  from {
+    opacity: 0;
+    transform: translateX(var(--space-8));
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .source-overlay-panel {
+    animation: none;
+  }
+}
+
+.source-rich-editor:empty::before {
+  content: attr(data-placeholder);
+  color: #aaa;
+  pointer-events: none;
+}
+
+.source-rich-editor p,
+.source-rich-editor ul,
+.source-rich-editor ol {
+  margin: 0 0 var(--space-4);
+}
+
+.source-rich-editor h1,
+.source-rich-editor h2,
+.source-rich-editor h3 {
+  margin: var(--space-6) 0 var(--space-3);
+  color: #2f2f2f;
+  font-weight: 600;
+}
+
+.source-rich-editor h1 {
+  font-size: var(--h1-size);
+  line-height: var(--h1-line);
+  letter-spacing: -0.04em;
+}
+
+.source-rich-editor h2 {
+  font-size: var(--h2-size);
+  line-height: var(--h2-line);
+  letter-spacing: -0.035em;
+}
+
+.source-rich-editor h3 {
+  font-size: var(--h3-size);
+  line-height: var(--h3-line);
+  letter-spacing: -0.03em;
+}
+
+.source-rich-editor ul,
+.source-rich-editor ol {
+  padding-left: var(--space-6);
+}
+
+.source-rich-editor li {
+  margin: var(--space-1) 0;
+}
+
 .type-page-title {
   font-size: var(--h1-size);
   line-height: var(--h1-line);
