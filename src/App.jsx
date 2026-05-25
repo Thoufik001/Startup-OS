@@ -725,12 +725,9 @@ function DefineView() {
           </div>
 
           <div className="rounded-lg border border-[#e9e9e9] bg-[#fafafa] p-4 sm:p-5">
-            <div className="mb-4 flex items-center gap-4">
-              <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-white text-[#555]"><Sparkles size={19} /></div>
-              <div>
-                <div className="type-section-title text-[#333]">AI synopsis</div>
-                <div className="type-body text-[#8a8a8a]">The summary Build reads first, generated from every source page below.</div>
-              </div>
+            <div className="mb-4">
+              <div className="type-section-title text-[#333]">✦ AI Summary</div>
+              <div className="type-body mt-1 text-[#8a8a8a]">The summary Build reads first, generated from every source page below.</div>
             </div>
             {editing ? (
               <textarea value={selected.aiSummary} onChange={(event) => updateSelected({ aiSummary: event.target.value })} rows={5} className="type-body w-full resize-none rounded-lg border border-[#dddddd] bg-white px-3 py-3 text-[#555] outline-none focus:border-[#aaa]" />
