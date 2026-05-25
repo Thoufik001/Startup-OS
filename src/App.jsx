@@ -1594,19 +1594,10 @@ function MobileBottomNav({ active, setActive }) {
     { id: "define", label: "Define", icon: BookOpen },
     { id: "build", label: "Build", icon: Bot },
   ];
-  const activeIndex = Math.max(0, items.findIndex((item) => item.id === active));
 
   return (
-    <nav className="fixed inset-x-0 bottom-3 z-40 flex justify-center px-4 lg:hidden">
-      <div className="relative grid w-full max-w-[420px] grid-cols-3 gap-1 overflow-hidden rounded-2xl border border-[#e5e5e5] bg-white/94 p-1 shadow-[0_14px_38px_rgba(0,0,0,0.14)] backdrop-blur">
-        <span
-          className="pointer-events-none absolute bottom-1 top-1 rounded-xl bg-[var(--brand-accent)] shadow-sm transition-transform duration-[250ms] ease-in-out"
-          style={{
-            left: "4px",
-            width: "calc((100% - 16px) / 3)",
-            transform: `translateX(calc(${activeIndex * 100}% + ${activeIndex * 4}px))`,
-          }}
-        />
+    <nav className="fixed inset-x-0 bottom-3 z-40 flex justify-center px-3 lg:hidden">
+      <div className="grid w-full max-w-[460px] grid-cols-3 gap-1 rounded-2xl border border-[#e5e5e5] bg-white/94 p-1 shadow-[0_14px_38px_rgba(0,0,0,0.14)] backdrop-blur">
         {items.map((item) => {
           const Icon = item.icon;
           const selected = active === item.id;
@@ -1614,8 +1605,8 @@ function MobileBottomNav({ active, setActive }) {
             <button
               key={item.id}
               onClick={() => setActive(item.id)}
-              className={`relative z-10 flex h-11 min-w-0 items-center justify-center gap-1 rounded-xl px-1 text-[11px] font-medium transition-colors duration-200 min-[390px]:gap-1.5 min-[390px]:px-2 min-[390px]:text-[12px] ${
-                selected ? "text-white" : "text-[#707070] hover:text-[var(--brand-accent)]"
+              className={`flex h-11 min-w-0 items-center justify-center gap-1 rounded-xl px-1 text-[11px] font-medium transition-all duration-200 min-[390px]:gap-1.5 min-[390px]:px-2 min-[390px]:text-[12px] ${
+                selected ? "bg-[var(--brand-accent)] text-white shadow-sm" : "text-[#707070] hover:bg-[#f6f6f6] hover:text-[var(--brand-accent)]"
               }`}
             >
               <Icon size={16} strokeWidth={1.9} className="shrink-0 transition-transform duration-[250ms] ease-in-out min-[390px]:h-[17px] min-[390px]:w-[17px]" />
