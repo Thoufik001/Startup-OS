@@ -2735,7 +2735,7 @@ function LandingPageV2({ onGetStarted }) {
         <section id="product" className="mx-auto max-w-[1160px] px-4 pb-20 sm:px-6 lg:px-8 lg:pb-24">
           <div className="landing-reveal overflow-hidden rounded-lg border border-[#e6e6e6] bg-[#fafafa] p-2 shadow-[0_24px_80px_rgba(0,0,0,0.08)]">
             <img
-              src="/contextos-dashboard-hero.png"
+              src="https://res.cloudinary.com/de2cfoigc/image/upload/v1779746051/image_2026-05-26_032406541_tvrqez.png"
               alt="ContextOS brand dashboard showing context health, source coverage, recommendations, changelog, and recent builds"
               className="block w-full rounded-md border border-[#eeeeee] bg-white"
             />
