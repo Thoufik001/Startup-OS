@@ -628,6 +628,12 @@ function DefineView() {
     const label = type === "Image" ? "Image reference" : type === "Doc" ? "Uploaded doc" : "Pasted note";
     updateSelected({ sources: [...selected.sources, { label, type }] });
   };
+  const sourcePreview = (file) => {
+    if (file.type === "Manual") return selected.synopsis || "Add the short manual synopsis for this source block.";
+    if (file.type === "Image") return "Visual references and grouped examples that Build can use for design-aware artifacts.";
+    if (file.type === "Doc" || file.type === "Slides") return "Uploaded material that will be extracted, summarized, and cited when Build uses this block.";
+    return "Pasted working notes, raw observations, call snippets, or founder memory for this source.";
+  };
 
   return (
     <div className="grid min-h-[calc(100vh-64px)] grid-cols-1 bg-[#fafafa] lg:grid-cols-[390px_minmax(0,1fr)]">
@@ -708,19 +714,25 @@ function DefineView() {
           </div>
 
           <div className="rounded-lg border border-[#e9e9e9] bg-[#fafafa] p-4 sm:p-5">
-            <div className="type-label text-[#999]">Synopsis form</div>
+            <div className="mb-4 flex items-center gap-4">
+              <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-white text-[#555]"><Sparkles size={19} /></div>
+              <div>
+                <div className="type-section-title text-[#333]">AI synopsis</div>
+                <div className="type-body text-[#8a8a8a]">The summary Build reads first, generated from every source page below.</div>
+              </div>
+            </div>
             {editing ? (
-              <textarea value={selected.synopsis} onChange={(event) => updateSelected({ synopsis: event.target.value, description: event.target.value })} rows={5} placeholder="Write the source synopsis..." className="type-body mt-3 w-full resize-none rounded-lg border border-[#dddddd] bg-white px-3 py-3 text-[#444] outline-none focus:border-[#aaa]" />
+              <textarea value={selected.aiSummary} onChange={(event) => updateSelected({ aiSummary: event.target.value })} rows={5} className="type-body w-full resize-none rounded-lg border border-[#dddddd] bg-white px-3 py-3 text-[#555] outline-none focus:border-[#aaa]" />
             ) : (
-              <p className="type-body mt-3 text-[#555]">{selected.synopsis || selected.description}</p>
+              <p className="type-body text-[#555]">{selected.aiSummary}</p>
             )}
           </div>
 
           <div className="mt-10">
             <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
               <div>
-                <div className="type-section-title text-[#333]">Sources</div>
-                <div className="type-body text-[#777]">Manual forms, notes, uploaded docs, and visual references.</div>
+                <div className="type-section-title text-[#333]">Source pages</div>
+                <div className="type-body text-[#777]">Notion-like pages for synopsis forms, notes, uploaded docs, and visual references.</div>
               </div>
               <div className="flex flex-wrap gap-2">
                 <button onClick={() => attachSource("Note")} className="h-8 rounded-lg border border-[#dedede] px-3 text-sm text-[#555] hover:bg-[#f7f7f7]">Paste note</button>
@@ -728,37 +740,30 @@ function DefineView() {
                 <button onClick={() => attachSource("Image")} className="h-8 rounded-lg border border-[#dedede] px-3 text-sm text-[#555] hover:bg-[#f7f7f7]">Add image</button>
               </div>
             </div>
-            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="overflow-hidden rounded-lg border border-[#e8e8e8] bg-white">
               {selected.sources.map((file, i) => (
-                <div key={`${file.label}-${i}`} className="rounded-lg border border-[#e8e8e8] bg-white p-4">
-                  <div className="flex items-center gap-3">
+                <div key={`${file.label}-${i}`} className="border-b border-[#eeeeee] p-4 last:border-0">
+                  <div className="flex items-start gap-3">
                     <div
-                      className="flex h-9 w-9 items-center justify-center rounded-lg text-white"
+                      className="mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-white"
                       style={{ backgroundColor: i === 0 ? appColors.sourceRed : i === 1 ? appColors.sourceBlue : appColors.sourceGreen }}
                     ><FileText size={17} /></div>
-                    <div>
-                      <div className="type-card-title text-[#444]">{file.label}</div>
-                      <div className="type-caption text-[#888]">{file.type}</div>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <div className="type-card-title text-[#333]">{file.label}</div>
+                        <span className="type-caption rounded-md bg-[#f3f3f3] px-2 py-0.5 text-[#777]">{file.type}</span>
+                      </div>
+                      {editing && file.type === "Manual" ? (
+                        <textarea value={selected.synopsis} onChange={(event) => updateSelected({ synopsis: event.target.value, description: event.target.value })} rows={4} placeholder="Write the manual synopsis..." className="type-body mt-3 w-full resize-none rounded-lg border border-[#dddddd] bg-[#fafafa] px-3 py-3 text-[#444] outline-none focus:border-[#aaa]" />
+                      ) : (
+                        <p className="type-body mt-2 text-[#666]">{sourcePreview(file)}</p>
+                      )}
                     </div>
+                    <ChevronRight size={16} className="mt-2 shrink-0 text-[#aaa]" />
                   </div>
                 </div>
               ))}
             </div>
-          </div>
-
-          <div className="mt-10 border-t border-[#ededed] pt-8">
-            <div className="mb-4 flex items-center gap-4">
-              <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-[#f1f1f1]"><Sparkles size={20} /></div>
-              <div>
-                <div className="type-section-title text-[#333]">AI summary</div>
-                <div className="type-body text-[#8a8a8a]">Generated from every source attached to this block.</div>
-              </div>
-            </div>
-            {editing ? (
-              <textarea value={selected.aiSummary} onChange={(event) => updateSelected({ aiSummary: event.target.value })} rows={4} className="type-body w-full resize-none rounded-lg border border-[#dddddd] px-3 py-3 text-[#555] outline-none focus:border-[#aaa]" />
-            ) : (
-              <p className="type-body text-[#555]">{selected.aiSummary}</p>
-            )}
           </div>
         </div>
       </section>
